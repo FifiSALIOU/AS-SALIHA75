@@ -967,59 +967,63 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             color: "white"
           }}>FAQ & Aide</div>
         </div>
-        <div 
-          onClick={handleLogout}
-          style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "12px", 
-            padding: "12px", 
-            cursor: "pointer"
-          }}
-        >
-          <div style={{ 
-            width: "20px", 
-            height: "20px", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center"
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <polyline points="16 17 21 12 16 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <line x1="21" y1="12" x2="9" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <div style={{ 
-            fontSize: "14px", 
-            color: "white"
-          }}>Déconnexion</div>
-        </div>
-        
-        {/* Bottom user block in sidebar */}
-        <div style={{ marginTop: "auto", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
-              background: "#3b82f6",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "14px",
-              fontWeight: 600
+        {/* Section Déconnexion + utilisateur en bas */}
+        <div style={{ marginTop: "auto" }}>
+          {/* Bouton Déconnexion */}
+          <div 
+            onClick={handleLogout}
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "12px", 
+              padding: "12px", 
+              cursor: "pointer"
+            }}
+          >
+            <div style={{ 
+              width: "20px", 
+              height: "20px", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center"
             }}>
-              {(userInfo?.full_name || "Utilisateur").charAt(0).toUpperCase()}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="16 17 21 12 16 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="21" y1="12" x2="9" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ color: "white", fontSize: "14px" }}>
-                {userInfo?.full_name || "Utilisateur"}
+            <div style={{ 
+              fontSize: "14px", 
+              color: "white"
+            }}>Déconnexion</div>
+          </div>
+          
+          {/* Bottom user block in sidebar */}
+          <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "50%",
+                background: "#3b82f6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                {(userInfo?.full_name || "Utilisateur").charAt(0).toUpperCase()}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
-                <div style={{ color: "white", fontSize: "12px" }}>En ligne</div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ color: "white", fontSize: "14px" }}>
+                  {userInfo?.full_name || "Utilisateur"}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
+                  <div style={{ color: "white", fontSize: "12px" }}>En ligne</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1682,7 +1686,15 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
               </div>
             )}
             {/* Tickets Table */}
-            <div style={{ background: "white", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", overflow: "hidden" }}>
+            <div
+              style={{
+                background: "white",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                // Important : laisser les menus d'actions dépasser de la carte (pour voir "Supprimer" en bas de la liste)
+                overflow: "visible",
+              }}
+            >
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#9ca3af", borderBottom: "1px solid #6b7280" }}>
@@ -1786,7 +1798,9 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                           <div
                             style={{
                               position: "absolute",
-                              top: 36,
+                              // Ouvrir le menu vers le haut pour que les options restent visibles
+                              top: "auto",
+                              bottom: 36,
                               right: 0,
                               background: "white",
                               border: "1px solid #e5e7eb",
@@ -1862,10 +1876,12 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                                 padding: "10px 12px", 
                                 background: "transparent", 
                                 border: "none", 
+                                borderTop: "1px solid #e5e7eb",
                                 textAlign: "left", 
                                 cursor: "pointer",
-                                color: "#111827",
-                                fontSize: "14px"
+                                color: "#b91c1c",
+                                fontSize: "14px",
+                                fontWeight: 500
                               }}
                             >
                               Supprimer

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PanelLeft } from "lucide-react";
 
 interface SecretaryDashboardProps {
   token: string;
@@ -95,6 +96,7 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
   const [showOutputFormat, setShowOutputFormat] = useState<boolean>(false);
   const [outputFormat, setOutputFormat] = useState<string>("");
   const [recentReports, setRecentReports] = useState<any[]>([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Fonction pour charger les rapports récents
   async function loadRecentReports() {
@@ -677,16 +679,24 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "sans-serif", background: "#f5f5f5" }}>
       {/* Sidebar */}
       <div style={{ 
-        width: "250px", 
+        width: sidebarCollapsed ? "80px" : "250px", 
         background: "#1e293b", 
         color: "white", 
         padding: "20px",
         display: "flex",
         flexDirection: "column",
-        gap: "20px"
+        gap: "20px",
+        transition: "width 0.3s ease"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "30px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          marginBottom: "30px",
+          paddingBottom: "10px",
+          borderBottom: "1px solid rgba(255,255,255,0.1)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M4 7L12 3L20 7V17L12 21L4 17V7Z" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
@@ -694,8 +704,60 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
                 <path d="M12 11V21" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
               </svg>
             </div>
-            <div style={{ fontSize: "18px", fontWeight: "600" }}>Gestion d'Incidents</div>
+            {!sidebarCollapsed && (
+              <div style={{ fontSize: "18px", fontWeight: "600", whiteSpace: "nowrap" }}>
+                Gestion d'Incidents
+              </div>
+            )}
           </div>
+          {!sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                marginLeft: "8px",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" />
+            </div>
+          )}
+          {sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                margin: "0 auto",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" style={{ transform: "rotate(180deg)" }} />
+            </div>
+          )}
         </div>
         <div 
           onClick={() => setActiveSection("dashboard")}
@@ -959,6 +1021,89 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
             )}
           </div>
         )}
+
+        {/* Bouton Déconnexion */}
+        <div
+          onClick={handleLogout}
+          style={{
+            marginTop: "auto",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "10px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "white",
+            transition: "background 0.2s",
+          }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <polyline
+                points="16 17 21 12 16 7"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <line
+                x1="21"
+                y1="12"
+                x2="9"
+                y2="12"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div style={{ fontSize: "14px", color: "white" }}>Déconnexion</div>
+        </div>
+
+        {/* Bottom user block in sidebar */}
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              background: "#3b82f6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 600
+            }}>
+              {(userInfo?.full_name || "Utilisateur").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{ color: "white", fontSize: "14px" }}>
+                {userInfo?.full_name || "Utilisateur"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
+                <div style={{ color: "white", fontSize: "12px" }}>En ligne</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -973,20 +1118,6 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
           gap: "24px",
           borderBottom: "1px solid #0f172a"
         }}>
-          <div style={{ 
-            cursor: "pointer", 
-            width: "24px", 
-            height: "24px", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            color: "white"
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
-              <path d="M19 13a2 2 0 0 1-2 2H5l-4 4V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor" opacity="0.6" transform="translate(2, 2)"/>
-            </svg>
-          </div>
           <div 
             onClick={() => setShowNotifications(!showNotifications)}
             style={{ 
@@ -1024,93 +1155,6 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
-          </div>
-          <div style={{ 
-            width: "1px", 
-            height: "24px", 
-            background: "#4b5563" 
-          }}></div>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "12px",
-            color: "white",
-            position: "relative"
-          }}>
-            <span style={{ fontSize: "14px", fontWeight: "500" }}>
-              {userInfo?.full_name || "Utilisateur"}
-            </span>
-            <div 
-              style={{ position: "relative", cursor: "pointer" }}
-              onClick={() => {
-                const menu = document.getElementById("profile-menu");
-                if (menu) {
-                  menu.style.display = menu.style.display === "none" ? "block" : "none";
-                }
-              }}
-            >
-              <div style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                background: "#3b82f6",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: "14px",
-                fontWeight: "600"
-              }}>
-                {userInfo?.full_name ? userInfo.full_name.charAt(0).toUpperCase() : "U"}
-              </div>
-              <div style={{
-                position: "absolute",
-                bottom: "0",
-                right: "0",
-                width: "12px",
-                height: "12px",
-                background: "#10b981",
-                borderRadius: "50%",
-                border: "2px solid #1e293b"
-              }}></div>
-            </div>
-            <div
-              id="profile-menu"
-              style={{
-                position: "absolute",
-                right: 0,
-                top: "48px",
-                background: "white",
-                borderRadius: "8px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-                padding: "8px 0",
-                minWidth: "160px",
-                zIndex: 50,
-                color: "#111827",
-                display: "none"
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleLogout}
-                style={{
-                  width: "100%",
-                  padding: "8px 16px",
-                  background: "transparent",
-                  border: "none",
-                  textAlign: "left",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  color: "#111827"
-                }}
-              >
-                <span style={{ fontSize: "16px" }}>⎋</span>
-                <span>Se déconnecter</span>
-              </button>
-            </div>
           </div>
         </div>
 

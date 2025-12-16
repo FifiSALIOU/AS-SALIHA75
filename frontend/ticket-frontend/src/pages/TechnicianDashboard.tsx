@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PanelLeft } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -67,6 +68,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
   const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({});
   const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
   const [resumedFlags, setResumedFlags] = useState<Record<string, boolean>>({});
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   async function loadNotifications() {
     if (!token || token.trim() === "") {
@@ -500,21 +502,31 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
   const assignedCount = assignedTickets.length;
   const inProgressCount = inProgressTickets.length;
   const resolvedCount = resolvedTickets.length;
+  const rejectedCount = rejectedTickets.length;
+  const ticketsToResolveCount = assignedCount + inProgressCount;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "sans-serif", background: "#f5f5f5" }}>
       {/* Sidebar */}
       <div style={{ 
-        width: "250px", 
+        width: sidebarCollapsed ? "80px" : "250px", 
         background: "#1e293b", 
         color: "white", 
         padding: "20px",
         display: "flex",
         flexDirection: "column",
-        gap: "20px"
+        gap: "20px",
+        transition: "width 0.3s ease"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "30px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          marginBottom: "30px",
+          paddingBottom: "10px",
+          borderBottom: "1px solid rgba(255,255,255,0.1)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M4 7L12 3L20 7V17L12 21L4 17V7Z" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
@@ -522,8 +534,60 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                 <path d="M12 11V21" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
               </svg>
             </div>
-            <div style={{ fontSize: "18px", fontWeight: "600" }}>Gestion d'Incidents</div>
+            {!sidebarCollapsed && (
+              <div style={{ fontSize: "18px", fontWeight: "600", whiteSpace: "nowrap" }}>
+                Gestion d'Incidents
+              </div>
+            )}
           </div>
+          {!sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                marginLeft: "8px",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" />
+            </div>
+          )}
+          {sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                margin: "0 auto",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" style={{ transform: "rotate(180deg)" }} />
+            </div>
+          )}
         </div>
         <div 
           onClick={() => setActiveSection("dashboard")}
@@ -586,7 +650,111 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               <line x1="15" y1="9" x2="9" y2="15"></line>
             </svg>
           </div>
-          <div>Tickets Rejetés</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span>Tickets Rejetés</span>
+            {rejectedCount > 0 && (
+              <span
+                style={{
+                  minWidth: "18px",
+                  padding: "0 6px",
+                  height: "18px",
+                  borderRadius: "999px",
+                  background: "#ef4444",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  color: "white",
+                }}
+              >
+                {rejectedCount > 99 ? "99+" : rejectedCount}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Bouton Déconnexion */}
+        <div
+          onClick={handleLogout}
+          style={{
+            marginTop: "auto",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "10px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "white",
+            transition: "background 0.2s",
+          }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <polyline
+                points="16 17 21 12 16 7"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <line
+                x1="21"
+                y1="12"
+                x2="9"
+                y2="12"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div style={{ fontSize: "14px", color: "white" }}>Déconnexion</div>
+        </div>
+
+        {/* Bottom user block in sidebar */}
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              background: "#3b82f6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 600
+            }}>
+              {(userInfo?.full_name || "Utilisateur").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{ color: "white", fontSize: "14px" }}>
+                {userInfo?.full_name || "Utilisateur"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
+                <div style={{ color: "white", fontSize: "12px" }}>En ligne</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -606,21 +774,57 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
             
             {/* Partie droite - Actions */}
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-              {/* Bouton + (création rapide) */}
-              <button
-                type="button"
+              {/* Icône panier - tickets à résoudre */}
+              <div
                 style={{
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
+                  cursor: "default",
+                  width: "32px",
+                  height: "32px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   color: "white",
-                  cursor: "pointer"
+                  position: "relative",
+                  opacity: ticketsToResolveCount > 0 ? 1 : 0.5,
                 }}
               >
-                +
-              </button>
-            
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 6h15l-1.5 9h-12L4 3H2"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="10" cy="20" r="1.5" fill="white" />
+                  <circle cx="17" cy="20" r="1.5" fill="white" />
+                </svg>
+                {ticketsToResolveCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      right: "-4px",
+                      minWidth: "18px",
+                      height: "18px",
+                      background: "#22c55e",
+                      borderRadius: "50%",
+                      border: "2px solid #1e293b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      color: "white",
+                      padding: "0 4px",
+                    }}
+                  >
+                    {ticketsToResolveCount > 99 ? "99+" : ticketsToResolveCount}
+                  </span>
+                )}
+              </div>
+
+              {/* Cloche notifications */}
               <div 
                 onClick={() => setShowNotifications(!showNotifications)}
                 style={{ 
@@ -658,93 +862,6 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
-              </div>
-              <div style={{ 
-                width: "1px", 
-                height: "24px", 
-                background: "#4b5563" 
-              }}></div>
-              <div style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "12px",
-                color: "white",
-                position: "relative"
-              }}>
-                <span style={{ fontSize: "14px", fontWeight: "500" }}>
-                  {userInfo?.full_name || "Utilisateur"}
-                </span>
-                <div 
-                  style={{ position: "relative", cursor: "pointer" }}
-                  onClick={() => {
-                    const menu = document.getElementById("profile-menu");
-                    if (menu) {
-                      menu.style.display = menu.style.display === "none" ? "block" : "none";
-                    }
-                  }}
-                >
-                  <div style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "50%",
-                    background: "#3b82f6",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "white",
-                    fontSize: "14px",
-                    fontWeight: "600"
-                  }}>
-                    {userInfo?.full_name ? userInfo.full_name.charAt(0).toUpperCase() : "U"}
-                  </div>
-                  <div style={{
-                    position: "absolute",
-                    bottom: "0",
-                    right: "0",
-                    width: "12px",
-                    height: "12px",
-                    background: "#10b981",
-                    borderRadius: "50%",
-                    border: "2px solid #1e293b"
-                  }}></div>
-                </div>
-                <div
-                  id="profile-menu"
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "48px",
-                    background: "white",
-                    borderRadius: "8px",
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-                    padding: "8px 0",
-                    minWidth: "160px",
-                    zIndex: 50,
-                    color: "#111827",
-                    display: "none"
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    style={{
-                      width: "100%",
-                      padding: "8px 16px",
-                      background: "transparent",
-                      border: "none",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      color: "#111827"
-                    }}
-                  >
-                    <span style={{ fontSize: "16px" }}>⎋</span>
-                    <span>Se déconnecter</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>

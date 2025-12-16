@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { PanelLeft, Users, Clock3, TrendingUp, Award, UserCheck, Star } from "lucide-react";
 import React from "react";
 import {
   LineChart,
@@ -243,9 +244,11 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [usersPerPage] = useState<number>(10);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   // États pour la section Techniciens
   const [techSearchQuery, setTechSearchQuery] = useState<string>("");
   const [techSpecializationFilter, setTechSpecializationFilter] = useState<string>("all");
+  const [techAvailabilityFilter, setTechAvailabilityFilter] = useState<string>("all");
   const [selectedTechnicianDetails, setSelectedTechnicianDetails] = useState<Technician | null>(null);
   const [showTechnicianDetailsModal, setShowTechnicianDetailsModal] = useState<boolean>(false);
   const [, setLoadingTechnicianStats] = useState<boolean>(false);
@@ -1616,6 +1619,28 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const assignedCount = assignedTickets.length;
   const resolvedCount = resolvedTickets.length;
 
+  // Statistiques agrégées pour la section Techniciens
+  const activeTechniciansCount = technicians.filter((tech) => {
+    const status = tech.status?.toLowerCase() || "";
+    const availability = tech.availability_status?.toLowerCase() || "";
+    return status === "actif" || availability === "disponible";
+  }).length;
+
+  const ticketsInProgressCount = assignedCount;
+
+  const ticketsWithFeedbackGlobal = allTickets.filter(
+    (t) => t.feedback_score !== null && t.feedback_score !== undefined
+  );
+  const averageSatisfactionScore =
+    ticketsWithFeedbackGlobal.length > 0
+      ? (
+          ticketsWithFeedbackGlobal.reduce(
+            (sum, t) => sum + (t.feedback_score || 0),
+            0
+          ) / ticketsWithFeedbackGlobal.length
+        ).toFixed(1)
+      : "0.0";
+
   // Fonctions pour préparer les données des graphiques
   const prepareTimeSeriesData = () => {
     const last30Days = Array.from({ length: 30 }, (_, i) => {
@@ -1873,16 +1898,24 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "sans-serif", background: "#f5f5f5" }}>
       {/* Sidebar */}
       <div style={{ 
-        width: "250px", 
+        width: sidebarCollapsed ? "80px" : "250px", 
         background: "#1e293b", 
         color: "white", 
         padding: "20px",
         display: "flex",
         flexDirection: "column",
-        gap: "20px"
+        gap: "20px",
+        transition: "width 0.3s ease"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "30px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          marginBottom: "30px",
+          paddingBottom: "10px",
+          borderBottom: "1px solid rgba(255,255,255,0.1)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M4 7L12 3L20 7V17L12 21L4 17V7Z" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
@@ -1890,8 +1923,58 @@ function DSIDashboard({ token }: DSIDashboardProps) {
                 <path d="M12 11V21" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
               </svg>
             </div>
-            <div style={{ fontSize: "18px", fontWeight: "600" }}>{appName}</div>
+            {!sidebarCollapsed && (
+              <div style={{ fontSize: "18px", fontWeight: "600", whiteSpace: "nowrap" }}>{appName}</div>
+            )}
           </div>
+          {!sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                marginLeft: "8px",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" />
+            </div>
+          )}
+          {sidebarCollapsed && (
+            <div
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "4px",
+                margin: "0 auto",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <PanelLeft size={20} color="white" style={{ transform: "rotate(180deg)" }} />
+            </div>
+          )}
         </div>
         <div 
           onClick={() => setActiveSection("dashboard")}
@@ -2363,6 +2446,89 @@ function DSIDashboard({ token }: DSIDashboardProps) {
             )}
           </div>
         )}
+
+        {/* Bouton Déconnexion */}
+        <div
+          onClick={handleLogout}
+          style={{
+            marginTop: "auto",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "10px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "white",
+            transition: "background 0.2s",
+          }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <polyline
+                points="16 17 21 12 16 7"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <line
+                x1="21"
+                y1="12"
+                x2="9"
+                y2="12"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div style={{ fontSize: "14px", color: "white" }}>Déconnexion</div>
+        </div>
+
+        {/* Bottom user block in sidebar */}
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              background: "#3b82f6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 600
+            }}>
+              {(userInfo?.full_name || "Utilisateur").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{ color: "white", fontSize: "14px" }}>
+                {userInfo?.full_name || "Utilisateur"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
+                <div style={{ color: "white", fontSize: "12px" }}>En ligne</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -2377,20 +2543,6 @@ function DSIDashboard({ token }: DSIDashboardProps) {
           gap: "24px",
           borderBottom: "1px solid #0f172a"
         }}>
-          <div style={{ 
-            cursor: "pointer", 
-            width: "24px", 
-            height: "24px", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            color: "white"
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
-              <path d="M19 13a2 2 0 0 1-2 2H5l-4 4V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor" opacity="0.6" transform="translate(2, 2)"/>
-            </svg>
-          </div>
           <div 
             onClick={() => setShowNotifications(!showNotifications)}
             style={{ 
@@ -2428,93 +2580,6 @@ function DSIDashboard({ token }: DSIDashboardProps) {
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
-          </div>
-          <div style={{ 
-            width: "1px", 
-            height: "24px", 
-            background: "#4b5563" 
-          }}></div>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "12px",
-            color: "white",
-            position: "relative"
-          }}>
-            <span style={{ fontSize: "14px", fontWeight: "500" }}>
-              {userInfo?.full_name || "Utilisateur"}
-            </span>
-            <div 
-              style={{ position: "relative", cursor: "pointer" }}
-              onClick={() => {
-                const menu = document.getElementById("profile-menu");
-                if (menu) {
-                  menu.style.display = menu.style.display === "none" ? "block" : "none";
-                }
-              }}
-            >
-              <div style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                background: "#3b82f6",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: "14px",
-                fontWeight: "600"
-              }}>
-                {userInfo?.full_name ? userInfo.full_name.charAt(0).toUpperCase() : "U"}
-              </div>
-              <div style={{
-                position: "absolute",
-                bottom: "0",
-                right: "0",
-                width: "12px",
-                height: "12px",
-                background: "#10b981",
-                borderRadius: "50%",
-                border: "2px solid #1e293b"
-              }}></div>
-            </div>
-            <div
-              id="profile-menu"
-              style={{
-                position: "absolute",
-                right: 0,
-                top: "48px",
-                background: "white",
-                borderRadius: "8px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-                padding: "8px 0",
-                minWidth: "160px",
-                zIndex: 50,
-                color: "#111827",
-                display: "none"
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleLogout}
-                style={{
-                  width: "100%",
-                  padding: "8px 16px",
-                  background: "transparent",
-                  border: "none",
-                  textAlign: "left",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  color: "#111827"
-                }}
-              >
-                <span style={{ fontSize: "16px" }}>⎋</span>
-                <span>Se déconnecter</span>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -4448,9 +4513,201 @@ function DSIDashboard({ token }: DSIDashboardProps) {
 
           {activeSection === "technicians" && userRole !== "Admin" && (
             <div style={{ padding: "24px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-                <h2 style={{ fontSize: "28px", fontWeight: "600", color: "#333", margin: 0 }}>Gestion des Techniciens</h2>
-                {/* Bouton de création masqué pour DSI et rôles non-admin */}
+              <div style={{ marginBottom: "24px" }}>
+                <h2
+                  style={{
+                    fontSize: "28px",
+                    fontWeight: 700,
+                    color: "#111827",
+                    margin: 0,
+                  }}
+                >
+                  Équipe Technique 👥
+                </h2>
+                <p
+                  style={{
+                    marginTop: "4px",
+                    marginBottom: 0,
+                    fontSize: "14px",
+                    color: "#4b5563",
+                  }}
+                >
+                  Gérez votre équipe de techniciens et suivez leurs performances.
+                </p>
+              </div>
+
+              {/* Cartes de synthèse pour l'équipe technique */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, minmax(220px, 1fr))",
+                  gap: "16px",
+                  marginBottom: "24px",
+                }}
+              >
+                {/* Techniciens actifs */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "16px",
+                      background: "#dcfce7",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Users size={24} color="#16a34a" />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                      }}
+                    >
+                      {activeTechniciansCount}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                      Techniciens actifs
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tickets en cours */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "16px",
+                      background: "#dbeafe",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Clock3 size={24} color="#2563eb" />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                      }}
+                    >
+                      {ticketsInProgressCount}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                      Tickets en cours
+                    </div>
+                  </div>
+                </div>
+
+                {/* Taux de résolution */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "16px",
+                      background: "#ede9fe",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <TrendingUp size={24} color="#7c3aed" />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                      }}
+                    >
+                      {metrics.userSatisfaction}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                      Taux de résolution
+                    </div>
+                  </div>
+                </div>
+
+                {/* Satisfaction moyenne */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "16px",
+                      background: "#fef9c3",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Award size={24} color="#eab308" />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                      }}
+                    >
+                      {averageSatisfactionScore}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                      Satisfaction moyenne
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Barre de recherche et filtres */}
@@ -4459,70 +4716,83 @@ function DSIDashboard({ token }: DSIDashboardProps) {
                 borderRadius: "8px", 
                 padding: "16px", 
                 marginBottom: "20px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                display: "flex",
-                gap: "12px",
-                alignItems: "center",
-                flexWrap: "wrap"
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
               }}>
-                {/* Recherche */}
-                <div style={{ flex: 1, minWidth: "200px" }}>
-                  <input
-                    type="text"
-                    placeholder="Rechercher par nom ou email..."
-                    value={techSearchQuery}
-                    onChange={(e) => setTechSearchQuery(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "14px"
-                    }}
-                  />
-                </div>
-                
-                {/* Filtre par spécialisation */}
-                <div style={{ minWidth: "150px" }}>
-                  <select
-                    value={techSpecializationFilter}
-                    onChange={(e) => setTechSpecializationFilter(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      background: "white",
-                      cursor: "pointer"
-                    }}
-                  >
-                    <option value="all">Toutes les spécialisations</option>
-                    <option value="materiel">Matériel</option>
-                    <option value="applicatif">Applicatif</option>
-                  </select>
+                {/* Ligne 1 : recherche */}
+                <div style={{ 
+                  display: "flex",
+                  gap: "12px",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  marginBottom: "12px"
+                }}>
+                  <div style={{ flex: 1, minWidth: "200px" }}>
+                    <input
+                      type="text"
+                      placeholder="Rechercher par nom ou email..."
+                      value={techSearchQuery}
+                      onChange={(e) => setTechSearchQuery(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "8px 12px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                        fontSize: "14px"
+                      }}
+                    />
+                  </div>
                 </div>
 
-                {/* Bouton pour réinitialiser les filtres */}
-                {(techSearchQuery || techSpecializationFilter !== "all") && (
-                  <button
-                    onClick={() => {
-                      setTechSearchQuery("");
-                      setTechSpecializationFilter("all");
+                {/* Ligne 2 : filtre en liste déroulante */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginTop: "4px",
+                  }}
+                >
+                  <span style={{ fontSize: "14px", color: "#6b7280" }}>Filtre :</span>
+                  <select
+                    value={
+                      techSpecializationFilter !== "all"
+                        ? techSpecializationFilter
+                        : techAvailabilityFilter !== "all"
+                        ? techAvailabilityFilter
+                        : "all"
+                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "all") {
+                        setTechSpecializationFilter("all");
+                        setTechAvailabilityFilter("all");
+                      } else if (value === "materiel" || value === "applicatif") {
+                        setTechSpecializationFilter(value);
+                        setTechAvailabilityFilter("all");
+                      } else {
+                        setTechAvailabilityFilter(value);
+                        setTechSpecializationFilter("all");
+                      }
                     }}
                     style={{
-                      padding: "8px 16px",
-                      background: "#6c757d",
-                      color: "white",
-                      border: "none",
+                      minWidth: "220px",
+                      padding: "8px 12px",
                       borderRadius: "4px",
+                      border: "1px solid #ddd",
+                      fontSize: "14px",
+                      background: "white",
                       cursor: "pointer",
-                      fontSize: "14px"
                     }}
                   >
-                    Réinitialiser
-                  </button>
-                )}
+                    <option value="all">Tous</option>
+                    <option value="materiel">Matériel</option>
+                    <option value="applicatif">Applicatif</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="en_pause">En pause</option>
+                    <option value="occupé">Occupé</option>
+                    <option value="indisponible">Indisponible</option>
+                  </select>
+                </div>
               </div>
                
                {/* Grille de cartes des techniciens */}
@@ -4543,6 +4813,13 @@ function DSIDashboard({ token }: DSIDashboardProps) {
                  if (techSpecializationFilter !== "all") {
                    filteredTechnicians = filteredTechnicians.filter((tech: any) =>
                      tech.specialization === techSpecializationFilter
+                   );
+                 }
+
+                 // Filtre par disponibilité
+                 if (techAvailabilityFilter !== "all") {
+                   filteredTechnicians = filteredTechnicians.filter((tech: any) =>
+                     (tech.availability_status || "").toLowerCase() === techAvailabilityFilter
                    );
                  }
                  
