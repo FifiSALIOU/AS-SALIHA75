@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PanelLeft, ClipboardList, Clock3, CheckCircle2 } from "lucide-react";
 
@@ -78,6 +78,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
   const [ticketHistory, setTicketHistory] = useState<TicketHistory[]>([]);
   const [activeSection, setActiveSection] = useState<string>("dashboard");
+  const notificationsSectionRef = useRef<HTMLDivElement>(null);
   const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({});
   const [resumedFlags, setResumedFlags] = useState<Record<string, boolean>>({});
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -428,6 +429,21 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
       void loadDetails();
     }
   }, [activeSection, selectedNotificationTicket, token]);
+
+  // Scroll vers le haut quand la section notifications s'ouvre
+  useEffect(() => {
+    if (activeSection === "notifications") {
+      // Attendre un peu pour que le DOM soit mis à jour
+      setTimeout(() => {
+        // Scroller vers le haut de la fenêtre
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Aussi scroller vers le conteneur de la section notifications si disponible
+        if (notificationsSectionRef.current) {
+          notificationsSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 150);
+    }
+  }, [activeSection]);
 
 
   async function handleTakeCharge(ticketId: string) {
@@ -1113,8 +1129,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         </div>
 
         {/* Contenu principal avec scroll */}
-        {activeSection !== "notifications" && (
-        <div style={{ flex: 1, padding: "30px", overflow: "auto", paddingTop: "80px" }}>
+        <div style={{ flex: 1, padding: "30px", overflow: activeSection === "notifications" ? "hidden" : "auto", paddingTop: "80px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             {activeSection === "dashboard" && (
               <div style={{ marginTop: "8px", marginBottom: "20px" }}>
@@ -2139,26 +2154,22 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-        )}
 
-      {/* Section Notifications dans le contenu principal */}
-      {activeSection === "notifications" && (
-          <div style={{
-            display: "flex",
-            width: "100%",
-            height: "calc(100vh - 80px)",
-            marginTop: "-30px",
-            marginLeft: "-30px",
-            marginRight: "-30px",
-            marginBottom: "-30px",
-            background: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            overflow: "hidden",
-            position: "relative"
-          }}>
+            {/* Section Notifications dans le contenu principal */}
+            {activeSection === "notifications" && (
+              <div ref={notificationsSectionRef} style={{
+                display: "flex",
+                width: "100%",
+                height: "calc(100vh - 80px)",
+                marginTop: "-30px",
+                marginLeft: "-30px",
+                marginRight: "-30px",
+                marginBottom: "-30px",
+                background: "white",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                overflow: "hidden"
+              }}>
                 {/* Panneau gauche - Liste des tickets avec notifications */}
                 <div style={{
                   width: "400px",
@@ -2172,7 +2183,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                   flexShrink: 0
                 }}>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     display: "flex",
                     justifyContent: "space-between",
@@ -2329,7 +2340,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                   {selectedNotificationTicketDetails ? (
                     <>
                       <div style={{
-                        padding: "20px",
+                        padding: "28px 20px 20px 20px",
                         borderBottom: "1px solid #e0e0e0",
                         display: "flex",
                         justifyContent: "space-between",
@@ -2356,8 +2367,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                       <div style={{
                         flex: 1,
                         overflowY: "auto",
-                        padding: "20px",
-                        minHeight: 0
+                        padding: "20px"
                       }}>
                         <div style={{ marginBottom: "16px" }}>
                           <strong>Titre :</strong>
@@ -2996,7 +3006,9 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
             </div>
           </div>
         </div>
-      )}
+            )}
+          </div>
+        </div>
 
       {/* Interface split-view pour les tickets avec notifications */}
       {showNotificationsTicketsView && (
@@ -3029,14 +3041,14 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               flexShrink: 0
             }}>
               <div style={{
-                padding: "20px",
+                padding: "28px 20px 10px 20px",
                 borderBottom: "1px solid #e0e0e0",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 background: "white"
               }}>
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>
+                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333", lineHeight: "1.4" }}>
                   Tickets avec notifications
                 </h3>
                 <button
@@ -3065,7 +3077,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               <div style={{
                 flex: 1,
                 overflowY: "auto",
-                padding: "10px"
+                padding: "5px 10px 10px 10px"
               }}>
                 {notificationsTickets.length === 0 ? (
                   <div style={{
@@ -3184,12 +3196,12 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               {selectedNotificationTicketDetails ? (
                 <>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 10px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     background: "white"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <h3 style={{ margin: 0 }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
+                      <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333", lineHeight: "1.4" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
                       {selectedNotificationTicketDetails.status === "rejete" && (
                         <span style={{
                           padding: "6px 10px",
@@ -3206,11 +3218,11 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                     </div>
                   </div>
                   
-                  <div style={{
-                    flex: 1,
-                    overflowY: "auto",
-                    padding: "20px"
-                  }}>
+                    <div style={{
+                      flex: 1,
+                      overflowY: "auto",
+                      padding: "10px 20px 20px 20px"
+                    }}>
                     <div style={{ marginBottom: "16px" }}>
                       <strong>Titre :</strong>
                       <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px" }}>

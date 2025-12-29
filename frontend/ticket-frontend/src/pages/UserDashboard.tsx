@@ -2236,7 +2236,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             flexShrink: 0
           }}>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     display: "flex",
                     justifyContent: "space-between",
@@ -2393,13 +2393,13 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             {selectedNotificationTicketDetails ? (
               <>
                 <div style={{
-                  padding: "20px",
+                  padding: "28px 20px 20px 20px",
                   borderBottom: "1px solid #e0e0e0",
                   background: "white",
                   borderRadius: "0 8px 0 0"
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h3 style={{ margin: 0 }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
+                    <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
                     {selectedNotificationTicketDetails.status === "rejete" && (
                       <span style={{
                         padding: "6px 10px",
@@ -3336,7 +3336,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                 flexShrink: 0
               }}>
                 <div style={{
-                  padding: "20px",
+                  padding: "28px 20px 20px 20px",
                   borderBottom: "1px solid #e0e0e0",
                   display: "flex",
                   justifyContent: "space-between",
@@ -3492,13 +3492,13 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                 {selectedNotificationTicketDetails ? (
                   <>
                     <div style={{
-                      padding: "20px",
+                      padding: "28px 20px 20px 20px",
                       borderBottom: "1px solid #e0e0e0",
                       background: "white",
                       borderRadius: "0 8px 0 0"
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <h3 style={{ margin: 0 }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
+                        <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
                         {selectedNotificationTicketDetails.status === "rejete" && (
                           <span style={{
                             padding: "6px 10px",

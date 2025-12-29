@@ -119,6 +119,7 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
   const [notificationsTickets, setNotificationsTickets] = useState<Ticket[]>([]);
   const [selectedNotificationTicket, setSelectedNotificationTicket] = useState<string | null>(null);
   const [selectedNotificationTicketDetails, setSelectedNotificationTicketDetails] = useState<Ticket | null>(null);
+  const [selectedNotificationTicketHistory, setSelectedNotificationTicketHistory] = useState<any[]>([]);
   const [userInfo, setUserInfo] = useState<UserRead | null>(null);
   const [showGenerateReport, setShowGenerateReport] = useState<boolean>(false);
   const [reportType, setReportType] = useState<string>("");
@@ -2176,6 +2177,13 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
       void loadNotificationsTickets();
     }
   }, [activeSection, showNotificationsTicketsView, notifications.length]);
+
+  // Scroller vers le haut quand le panneau de notifications s'ouvre
+  useEffect(() => {
+    if (showNotificationsTicketsView) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [showNotificationsTicketsView]);
 
   // Charger automatiquement les détails du ticket sélectionné dans la section notifications
   useEffect(() => {
@@ -7814,12 +7822,13 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               flexShrink: 0
             }}>
               <div style={{
-                padding: "20px",
+                padding: "28px 20px 20px 20px",
                 borderBottom: "1px solid #e0e0e0",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                background: "white"
+                background: "white",
+                borderRadius: "8px 0 0 0"
               }}>
                 <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>
                   Tickets avec notifications
@@ -7829,6 +7838,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     setShowNotificationsTicketsView(false);
                     setSelectedNotificationTicket(null);
                     setSelectedNotificationTicketDetails(null);
+                    setSelectedNotificationTicketHistory([]);
                   }}
                   style={{
                     background: "none",
@@ -7880,7 +7890,20 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                             if (res.ok) {
                               const data = await res.json();
                               setSelectedNotificationTicketDetails(data);
-                              await loadTicketHistory(ticket.id);
+                              // Charger l'historique
+                              try {
+                                const historyRes = await fetch(`http://localhost:8000/tickets/${ticket.id}/history`, {
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                });
+                                if (historyRes.ok) {
+                                  const historyData = await historyRes.json();
+                                  setSelectedNotificationTicketHistory(Array.isArray(historyData) ? historyData : []);
+                                }
+                              } catch (err) {
+                                console.error("Erreur chargement historique:", err);
+                              }
                             }
                           } catch (err) {
                             console.error("Erreur chargement détails:", err);
@@ -7969,25 +7992,13 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               {selectedNotificationTicketDetails ? (
                 <>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
-                    background: "white"
+                    background: "white",
+                    borderRadius: "0 8px 0 0"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <h3 style={{ margin: 0 }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
-                      {selectedNotificationTicketDetails.status === "rejete" && (
-                        <span style={{
-                          padding: "6px 10px",
-                          borderRadius: "16px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          background: "#fee2e2",
-                          color: "#991b1b",
-                          border: "1px solid #fecaca"
-                        }}>
-                          Rejeté
-                        </span>
-                      )}
+                      <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
                     </div>
                   </div>
                   
@@ -8003,22 +8014,14 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                       </p>
                     </div>
 
-                    {selectedNotificationTicketDetails.description && (
-                      <div style={{ marginBottom: "16px" }}>
-                        <strong>Description :</strong>
-                        <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px", whiteSpace: "pre-wrap" }}>
-                          {selectedNotificationTicketDetails.description}
-                        </p>
-                      </div>
-                    )}
+                    <div style={{ marginBottom: "16px" }}>
+                      <strong>Description :</strong>
+                      <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px", whiteSpace: "pre-wrap" }}>
+                        {selectedNotificationTicketDetails.description || ""}
+                      </p>
+                    </div>
 
                     <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
-                      <div>
-                        <strong>Type :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
-                        </span>
-                      </div>
                       <div>
                         <strong>Priorité :</strong>
                         <span style={{
@@ -8033,38 +8036,28 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           {selectedNotificationTicketDetails.priority}
                         </span>
                       </div>
-                      <div>
-                        <strong>Statut :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.status}
-                        </span>
-                      </div>
                       {selectedNotificationTicketDetails.category && (
                         <div>
                           <strong>Catégorie :</strong>
                           <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
-                            {selectedNotificationTicketDetails.category}
+                            {selectedNotificationTicketDetails.category || "Non spécifiée"}
                           </span>
                         </div>
                       )}
-                    </div>
-
-                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
                       {selectedNotificationTicketDetails.creator && (
                         <div>
                           <strong>Créateur :</strong>
-                          <p style={{ marginTop: "4px" }}>
+                          <span style={{ marginLeft: "8px" }}>
                             {selectedNotificationTicketDetails.creator.full_name}
-                            {selectedNotificationTicketDetails.creator.agency && ` - ${selectedNotificationTicketDetails.creator.agency}`}
-                          </p>
+                          </span>
                         </div>
                       )}
                       {selectedNotificationTicketDetails.technician && (
                         <div>
                           <strong>Technicien assigné :</strong>
-                          <p style={{ marginTop: "4px" }}>
+                          <span style={{ marginLeft: "8px" }}>
                             {selectedNotificationTicketDetails.technician.full_name}
-                          </p>
+                          </span>
                         </div>
                       )}
                     </div>
@@ -8072,10 +8065,10 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     <div style={{ marginTop: "24px", marginBottom: "16px" }}>
                       <strong>Historique :</strong>
                       <div style={{ marginTop: "8px" }}>
-                        {ticketHistory.length === 0 ? (
+                        {selectedNotificationTicketHistory.length === 0 ? (
                           <p style={{ color: "#999", fontStyle: "italic" }}>Aucun historique</p>
                         ) : (
-                          ticketHistory.map((h) => (
+                          selectedNotificationTicketHistory.map((h) => (
                             <div key={h.id} style={{ padding: "8px", marginTop: "4px", background: "#f8f9fa", borderRadius: "4px" }}>
                               <div style={{ fontSize: "12px", color: "#555" }}>
                                 {new Date(h.changed_at).toLocaleString("fr-FR")}

@@ -170,6 +170,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const [selectedNotificationTicketDetails, setSelectedNotificationTicketDetails] = useState<Ticket | null>(null);
   const [selectedNotificationTicketHistory, setSelectedNotificationTicketHistory] = useState<any[]>([]);
   const [userInfo, setUserInfo] = useState<UserRead | null>(null);
+  const notificationsSectionRef = useRef<HTMLDivElement>(null);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [delegatedTicketsByMe, setDelegatedTicketsByMe] = useState<Set<string>>(new Set());
   const [userRoleFilter, setUserRoleFilter] = useState<string>("all");
@@ -1061,6 +1062,21 @@ function DSIDashboard({ token }: DSIDashboardProps) {
       void loadDetails();
     }
   }, [activeSection, selectedNotificationTicket, token]);
+
+  // Scroll vers le haut quand la section notifications s'ouvre
+  useEffect(() => {
+    if (activeSection === "notifications") {
+      // Attendre un peu pour que le DOM soit mis à jour
+      setTimeout(() => {
+        // Scroller vers le haut de la fenêtre
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Aussi scroller vers le conteneur de la section notifications si disponible
+        if (notificationsSectionRef.current) {
+          notificationsSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 150);
+    }
+  }, [activeSection]);
 
   async function loadUnreadCount() {
     if (!token || token.trim() === "") {
@@ -5064,8 +5080,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         </div>
 
         {/* Contenu principal avec scroll */}
-        {activeSection !== "notifications" && (
-        <div style={{ flex: 1, padding: "30px", overflow: "auto", paddingTop: "80px" }}>
+        <div style={{ flex: 1, padding: "30px", overflow: activeSection === "notifications" ? "hidden" : "auto", paddingTop: "80px" }}>
           {activeSection === "dashboard" && (
             <>
       {/* En-tête centre d'assignation */}
@@ -12928,12 +12943,9 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             </div>
           )}
 
-        </div>
-        )}
-
-        {/* Section Notifications dans le contenu principal */}
-        {activeSection === "notifications" && (
-          <div style={{
+            {/* Section Notifications dans le contenu principal */}
+            {activeSection === "notifications" && (
+              <div ref={notificationsSectionRef} style={{
             display: "flex",
             width: "100%",
             height: "calc(100vh - 80px)",
@@ -13116,7 +13128,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               {selectedNotificationTicketDetails ? (
                 <>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     display: "flex",
                     justifyContent: "space-between",
@@ -13143,8 +13155,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                   <div style={{
                     flex: 1,
                     overflowY: "auto",
-                    padding: "20px",
-                    minHeight: 0
+                    padding: "20px"
                   }}>
                     <div style={{ marginBottom: "16px" }}>
                       <strong>Titre :</strong>
@@ -14838,6 +14849,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
