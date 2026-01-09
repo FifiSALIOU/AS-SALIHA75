@@ -52,6 +52,11 @@ interface Notification {
 }
 
 function UserDashboard({ token: tokenProp }: UserDashboardProps) {
+  // Fonction helper pour formater le numéro de ticket en "TKT-XXX"
+  const formatTicketNumber = (number: number): string => {
+    return `TKT-${number.toString().padStart(3, '0')}`;
+  };
+
   // Récupérer le token depuis localStorage si le prop est vide
   const [actualToken, setActualToken] = useState<string>(() => {
     if (tokenProp && tokenProp.trim() !== "") {
@@ -2132,7 +2137,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                           e.currentTarget.style.background = "white";
                         }}
                       >
-                        <td style={{ padding: "12px", fontSize: "14px", color: "#1e293b" }}>#{t.number}</td>
+                        <td style={{ padding: "12px", fontSize: "14px", color: "#1e293b", fontWeight: "600" }}>{formatTicketNumber(t.number)}</td>
                         <td style={{ padding: "12px", fontSize: "14px", color: "#1e293b" }}>{t.title}</td>
                         <td style={{ padding: "12px" }}>
                           <span style={{
@@ -2361,8 +2366,9 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                 (activeSection === "dashboard" || activeSection === "tickets"
                   ? tickets.filter((t) => {
                     const search = dashboardSearch.trim().toLowerCase();
+                    const formattedNumber = formatTicketNumber(t.number).toLowerCase();
                     const matchesSearch = !search || 
-                      t.id.toLowerCase().includes(search) ||
+                      formattedNumber.includes(search) ||
                       t.number.toString().includes(search) ||
                       t.title.toLowerCase().includes(search) ||
                       (t.description || "").toLowerCase().includes(search);
@@ -2451,8 +2457,8 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                         {/* En-tête : ID + Badges + Menu 3 points */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                            <span style={{ fontSize: "11px", color: "#6b7280", fontFamily: "monospace" }}>
-                              {t.id}
+                            <span style={{ fontSize: "14px", color: "#1f2937", fontFamily: "monospace", fontWeight: "600" }}>
+                              {formatTicketNumber(t.number)}
                             </span>
                             
                             {/* Badge Statut */}
@@ -2925,7 +2931,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                             color: "#333",
                             lineHeight: "1.5"
                           }}>
-                            Ticket #{ticket.number}
+                            {formatTicketNumber(ticket.number)}
                           </p>
                           <p style={{
                             margin: "4px 0 0 0",
@@ -3496,7 +3502,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             <div style={{ background: "white", padding: "24px", borderRadius: "12px", maxWidth: "420px", width: "90%" }}>
               <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#1f2937", marginBottom: "12px" }}>Êtes-vous sûr ?</h3>
               <p style={{ color: "#4b5563", marginBottom: "16px" }}>
-                Cette action supprimera définitivement le ticket #{confirmDeleteTicket.number}. 
+                Cette action supprimera définitivement le ticket {formatTicketNumber(confirmDeleteTicket.number)}. 
               </p>
               <div style={{ display: "flex", gap: "12px" }}>
                 <button 
