@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import type { FormEvent } from "react";
-import { Clock, CheckCircle, LayoutDashboard, PlusCircle, Ticket, ChevronLeft, ChevronRight, Bell, Wrench, Monitor, Search } from "lucide-react";
+import { Clock, CheckCircle, LayoutDashboard, PlusCircle, Ticket, ChevronLeft, ChevronRight, Bell, Wrench, Monitor, Search, Send } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 
 interface UserDashboardProps {
@@ -3454,17 +3454,35 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
           </select>
         </div>
                 <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
-                  <button type="submit" disabled={loading || !title.trim() || !description.trim()} style={{
-                    flex: 1,
-                    padding: "8px 16px",
-                    backgroundColor: "#475569",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: "500"
-                  }}>
+                  <button 
+                    type="submit" 
+                    disabled={loading || !title.trim() || !description.trim()} 
+                    style={{
+                      flex: 1,
+                      padding: "12px 20px",
+                      backgroundColor: "#FB7E06",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      transition: "opacity 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!loading && title.trim() && description.trim()) {
+                        e.currentTarget.style.opacity = "0.9";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = "1";
+                    }}
+                  >
+                    <Send size={16} style={{ color: "white" }} />
                     {loading ? "Création en cours..." : "Soumettre le ticket"}
                   </button>
                   <button
