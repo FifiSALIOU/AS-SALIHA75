@@ -36,7 +36,7 @@ function LoginPage({ onLogin }: LoginPageProps) {
 
       // Créer un AbortController pour gérer le timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 secondes
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout de 30 secondes
 
       let res;
       try {
