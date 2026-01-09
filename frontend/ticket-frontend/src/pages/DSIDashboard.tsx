@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell } from "lucide-react";
+import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3 } from "lucide-react";
 import React from "react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -4661,12 +4661,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             }}
           >
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activeSection === "technicians" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
+              <Users size={20} color={activeSection === "technicians" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2.5} />
             </div>
             <div style={{ flex: 1, fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Techniciens</div>
           </div>
@@ -4711,12 +4706,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             }}
           >
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} />
-                <rect x="6" y="10" width="3" height="11" fill={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} />
-                <rect x="10.5" y="6" width="3" height="15" fill={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} />
-                <rect x="15" y="16" width="3" height="5" fill={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} />
-              </svg>
+              <BarChart3 size={20} color={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2.5} />
             </div>
             <div style={{ flex: 1 }}>Rapports</div>
             <div style={{ width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -5129,7 +5119,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               color: "#111827",
               fontFamily: "system-ui, -apple-system, sans-serif"
             }}>
-              Tableau de bord
+              {activeSection === "tickets" ? "Tickets" : "Tableau de bord"}
             </div>
             <div style={{ 
               fontSize: "13px", 
@@ -5137,7 +5127,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               color: "#6b7280",
               fontFamily: "system-ui, -apple-system, sans-serif"
             }}>
-              Vue d'ensemble de votre activité
+              {activeSection === "tickets" ? "Gérez tous vos tickets" : "Vue d'ensemble de votre activité"}
             </div>
           </div>
           
@@ -6573,11 +6563,10 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
           {activeSection === "tickets" && (
             <>
-              <h2 style={{ marginBottom: "24px", fontSize: "28px", fontWeight: "600", color: "#333" }}>Tous les tickets</h2>
-              
               <div style={{ 
                 display: "flex", 
                 gap: "16px", 
+                marginTop: "24px",
                 marginBottom: "24px", 
                 flexWrap: "wrap",
                 background: "white",
