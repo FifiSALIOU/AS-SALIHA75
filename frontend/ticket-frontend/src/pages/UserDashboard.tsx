@@ -1693,20 +1693,31 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   minHeight: "100px",
                   overflow: "hidden"
                 }}
+                onMouseEnter={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1.5)";
+                }}
+                onMouseLeave={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1)";
+                }}
               >
                 {/* Cercle décoratif orange en arrière-plan - coin supérieur droit */}
-                <div style={{
-                  position: "absolute",
-                  right: "-16px",
-                  top: "-16px",
-                  width: "96px",
-                  height: "96px",
-                  borderRadius: "50%",
-                  background: "#ea580c",
-                  opacity: 0.05,
-                  zIndex: 0,
-                  transition: "transform 0.3s ease"
-                }}></div>
+                <div 
+                  className="kpi-badge-user"
+                  style={{
+                    position: "absolute",
+                    right: "-16px",
+                    top: "-16px",
+                    width: "96px",
+                    height: "96px",
+                    borderRadius: "50%",
+                    background: "#ea580c",
+                    opacity: 0.05,
+                    zIndex: 0,
+                    transition: "transform 500ms ease"
+                  }}
+                ></div>
 
                 <div style={{ 
                   display: "flex", 
@@ -1753,20 +1764,31 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   minHeight: "100px",
                   overflow: "hidden"
                 }}
+                onMouseEnter={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1.5)";
+                }}
+                onMouseLeave={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1)";
+                }}
               >
                 {/* Cercle décoratif bleu en arrière-plan - coin supérieur droit */}
-                <div style={{
-                  position: "absolute",
-                  right: "-16px",
-                  top: "-16px",
-                  width: "96px",
-                  height: "96px",
-                  borderRadius: "50%",
-                  background: "#0284c7",
-                  opacity: 0.05,
-                  zIndex: 0,
-                  transition: "transform 0.3s ease"
-                }}></div>
+                <div 
+                  className="kpi-badge-user"
+                  style={{
+                    position: "absolute",
+                    right: "-16px",
+                    top: "-16px",
+                    width: "96px",
+                    height: "96px",
+                    borderRadius: "50%",
+                    background: "#0284c7",
+                    opacity: 0.05,
+                    zIndex: 0,
+                    transition: "transform 500ms ease"
+                  }}
+                ></div>
 
                 <div style={{ 
                   display: "flex", 
@@ -1811,20 +1833,31 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   minHeight: "100px",
                   overflow: "hidden"
                 }}
+                onMouseEnter={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1.5)";
+                }}
+                onMouseLeave={(e) => {
+                  const badge = e.currentTarget.querySelector('.kpi-badge-user') as HTMLElement;
+                  if (badge) badge.style.transform = "scale(1)";
+                }}
               >
                 {/* Cercle décoratif vert en arrière-plan - coin supérieur droit */}
-                <div style={{
-                  position: "absolute",
-                  right: "-16px",
-                  top: "-16px",
-                  width: "96px",
-                  height: "96px",
-                  borderRadius: "50%",
-                  background: "#16a34a",
-                  opacity: 0.05,
-                  zIndex: 0,
-                  transition: "transform 0.3s ease"
-                }}></div>
+                <div 
+                  className="kpi-badge-user"
+                  style={{
+                    position: "absolute",
+                    right: "-16px",
+                    top: "-16px",
+                    width: "96px",
+                    height: "96px",
+                    borderRadius: "50%",
+                    background: "#16a34a",
+                    opacity: 0.05,
+                    zIndex: 0,
+                    transition: "transform 500ms ease"
+                  }}
+                ></div>
 
                 <div style={{ 
                   display: "flex", 
