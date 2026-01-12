@@ -1687,6 +1687,8 @@ function DSIDashboard({ token }: DSIDashboardProps) {
        }
     }
     void loadData();
+    void loadNotifications();
+    void loadUnreadCount();
 
     // Recharger automatiquement les tickets et notifications toutes les 30 secondes
     // Cela permet aux métriques (temps moyen, satisfaction, etc.) de se mettre à jour automatiquement avec les données réelles
@@ -13330,188 +13332,31 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
             {/* Section Notifications dans le contenu principal */}
             {activeSection === "notifications" && (
-              <div ref={notificationsSectionRef} style={{
-            display: "flex",
-            width: "100%",
-            height: "calc(100vh - 80px)",
-            marginTop: "-30px",
-            marginLeft: "-30px",
-            marginRight: "-30px",
-            marginBottom: "-30px",
-            background: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            overflow: "hidden"
-          }}>
-            {/* Panneau gauche - Liste des tickets avec notifications */}
-            <div style={{
-              width: "400px",
-              borderRight: "1px solid #e0e0e0",
-              display: "flex",
-              flexDirection: "column",
-              background: "#f8f9fa",
-              borderRadius: "8px 0 0 8px",
-              height: "100%",
-              overflow: "hidden",
-              flexShrink: 0
-            }}>
               <div style={{
-                padding: "20px",
-                borderBottom: "1px solid #e0e0e0",
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                width: "100%",
+                height: "calc(100vh - 80px)",
+                marginTop: "-30px",
+                marginLeft: "-30px",
+                marginRight: "-30px",
+                marginBottom: "-30px",
                 background: "white",
-                borderRadius: "8px 0 0 0"
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                overflow: "hidden"
               }}>
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>
-                  Tickets avec notifications
-                </h3>
-                <button
-                  onClick={() => {
-                    navigate("/dashboard/dsi");
-                    setSelectedNotificationTicket(null);
-                    setSelectedNotificationTicketDetails(null);
-                  }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    fontSize: "24px",
-                    cursor: "pointer",
-                    color: "#999",
-                    padding: "0",
-                    width: "24px",
-                    height: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-              <div style={{
-                flex: 1,
-                overflowY: "auto",
-                padding: "10px"
-              }}>
-                {notificationsTickets.length === 0 ? (
-                  <div style={{
-                    textAlign: "center",
-                    padding: "40px 20px",
-                    color: "#999"
-                  }}>
-                    Aucun ticket avec notification
-                  </div>
-                ) : (
-                  notificationsTickets.map((ticket) => {
-                    const ticketNotifications = notifications.filter(n => n.ticket_id === ticket.id);
-                    const unreadCount = ticketNotifications.filter(n => !n.read).length;
-                    const isSelected = selectedNotificationTicket === ticket.id;
-                    
-                    return (
-                      <div
-                        key={ticket.id}
-                        onClick={async () => {
-                          setSelectedNotificationTicket(ticket.id);
-                          try {
-                            const res = await fetch(`http://localhost:8000/tickets/${ticket.id}`, {
-                              headers: {
-                                Authorization: `Bearer ${token}`,
-                              },
-                            });
-                            if (res.ok) {
-                              const data = await res.json();
-                              setSelectedNotificationTicketDetails(data);
-                              await loadTicketHistory(ticket.id);
-                            }
-                          } catch (err) {
-                            console.error("Erreur chargement détails:", err);
-                          }
-                        }}
-                        style={{
-                          padding: "12px",
-                          marginBottom: "8px",
-                          borderRadius: "8px",
-                          background: isSelected ? "#e3f2fd" : "white",
-                          border: isSelected ? "2px solid #2196f3" : "1px solid #e0e0e0",
-                          cursor: "pointer",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        <div style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: "10px"
-                        }}>
-                          <div style={{ flex: 1 }}>
-                            <p style={{
-                              margin: 0,
-                              fontSize: "14px",
-                              fontWeight: isSelected ? "600" : "500",
-                              color: "#333",
-                              lineHeight: "1.5"
-                            }}>
-                              Ticket {formatTicketNumber(ticket.number)}
-                            </p>
-                            <p style={{
-                              margin: "4px 0 0 0",
-                              fontSize: "13px",
-                              color: "#666",
-                              lineHeight: "1.4",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              display: "-webkit-box",
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: "vertical"
-                            }}>
-                              {ticket.title}
-                            </p>
-                            <p style={{
-                              margin: "4px 0 0 0",
-                              fontSize: "11px",
-                              color: "#999"
-                            }}>
-                              {ticketNotifications.length} notification{ticketNotifications.length > 1 ? "s" : ""}
-                            </p>
-                          </div>
-                          {unreadCount > 0 && (
-                            <div style={{
-                              minWidth: "20px",
-                              height: "20px",
-                              borderRadius: "10px",
-                              background: "#f44336",
-                              color: "white",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "11px",
-                              fontWeight: "600",
-                              padding: "0 6px"
-                            }}>
-                              {unreadCount}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* Panneau droit - Détails du ticket sélectionné */}
-            <div style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              background: "white",
-              borderRadius: "0 8px 8px 0"
-            }}>
-              {selectedNotificationTicketDetails ? (
-                <>
+                {/* Panneau gauche - Liste des tickets avec notifications */}
+                <div style={{
+                  width: "400px",
+                  borderRight: "1px solid #e0e0e0",
+                  display: "flex",
+                  flexDirection: "column",
+                  background: "#f8f9fa",
+                  borderRadius: "8px 0 0 8px",
+                  height: "100%",
+                  overflow: "hidden",
+                  flexShrink: 0
+                }}>
                   <div style={{
                     padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
@@ -13519,146 +13364,302 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     justifyContent: "space-between",
                     alignItems: "center",
                     background: "white",
-                    borderRadius: "0 8px 0 0"
+                    borderRadius: "8px 0 0 0"
                   }}>
-                    <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket {formatTicketNumber(selectedNotificationTicketDetails.number)}</h3>
-                    {selectedNotificationTicketDetails.status === "rejete" && (
-                      <span style={{
-                        padding: "6px 10px",
-                        borderRadius: "16px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        background: "#fee2e2",
-                        color: "#991b1b",
-                        border: "1px solid #fecaca"
-                      }}>
-                        Rejeté
-                      </span>
-                    )}
+                    <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>
+                      Tickets avec notifications
+                    </h3>
+                    <button
+                      onClick={() => {
+                        navigate("/dashboard/dsi");
+                        setSelectedNotificationTicket(null);
+                        setSelectedNotificationTicketDetails(null);
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        fontSize: "24px",
+                        cursor: "pointer",
+                        color: "#999",
+                        padding: "0",
+                        width: "24px",
+                        height: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
-                  
                   <div style={{
                     flex: 1,
                     overflowY: "auto",
-                    padding: "20px"
+                    padding: "10px"
                   }}>
-                    <div style={{ marginBottom: "16px" }}>
-                      <strong>Titre :</strong>
-                      <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px" }}>
-                        {selectedNotificationTicketDetails.title}
-                      </p>
-                    </div>
-
-                    {selectedNotificationTicketDetails.description && (
-                      <div style={{ marginBottom: "16px" }}>
-                        <strong>Description :</strong>
-                        <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px", whiteSpace: "pre-wrap" }}>
-                          {selectedNotificationTicketDetails.description}
-                        </p>
+                    {notificationsTickets.length === 0 ? (
+                      <div style={{
+                        textAlign: "center",
+                        padding: "40px 20px",
+                        color: "#999"
+                      }}>
+                        Aucun ticket avec notification
                       </div>
-                    )}
-
-                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
-                      {selectedNotificationTicketDetails.type && (
-                        <div>
-                          <strong>Type :</strong>
-                          <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
-                            {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <strong>Priorité :</strong>
-                        <span style={{
-                          marginLeft: "8px",
-                          padding: "4px 8px",
-                          borderRadius: "4px",
-                          fontSize: "12px",
-                          fontWeight: "500",
-                          background: selectedNotificationTicketDetails.priority === "critique" ? "#f44336" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : "#9e9e9e",
-                          color: selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : "white"
-                        }}>
-                          {getPriorityLabel(selectedNotificationTicketDetails.priority)}
-                        </span>
-                      </div>
-                      <div>
-                        <strong>Statut :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.status}
-                        </span>
-                      </div>
-                      {selectedNotificationTicketDetails.category && (
-                        <div>
-                          <strong>Catégorie :</strong>
-                          <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
-                            {selectedNotificationTicketDetails.category}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
-                      {selectedNotificationTicketDetails.creator && (
-                        <div>
-                          <strong>Créateur :</strong>
-                          <p style={{ marginTop: "4px" }}>
-                            {selectedNotificationTicketDetails.creator.full_name}
-                          </p>
-                        </div>
-                      )}
-                      {selectedNotificationTicketDetails.technician && (
-                        <div>
-                          <strong>Technicien assigné :</strong>
-                          <p style={{ marginTop: "4px" }}>
-                            {selectedNotificationTicketDetails.technician.full_name}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{ marginTop: "24px", marginBottom: "16px" }}>
-                      <strong>Historique :</strong>
-                      <div style={{ marginTop: "8px" }}>
-                        {ticketHistory.length === 0 ? (
-                          <p style={{ color: "#999", fontStyle: "italic" }}>Aucun historique</p>
-                        ) : (
-                          ticketHistory.map((h) => (
-                            <div key={h.id} style={{ padding: "8px", marginTop: "4px", background: "#f8f9fa", borderRadius: "4px" }}>
-                              <div style={{ fontSize: "12px", color: "#555" }}>
-                                {new Date(h.changed_at).toLocaleString("fr-FR")}
+                    ) : (
+                      notificationsTickets.map((ticket) => {
+                        const ticketNotifications = notifications.filter(n => n.ticket_id === ticket.id);
+                        const unreadCount = ticketNotifications.filter(n => !n.read).length;
+                        const isSelected = selectedNotificationTicket === ticket.id;
+                        
+                        return (
+                          <div
+                            key={ticket.id}
+                            onClick={async () => {
+                              setSelectedNotificationTicket(ticket.id);
+                              try {
+                                const res = await fetch(`http://localhost:8000/tickets/${ticket.id}`, {
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                });
+                                if (res.ok) {
+                                  const data = await res.json();
+                                  setSelectedNotificationTicketDetails(data);
+                                  await loadTicketHistory(ticket.id);
+                                }
+                              } catch (err) {
+                                console.error("Erreur chargement détails:", err);
+                              }
+                            }}
+                            style={{
+                              padding: "12px",
+                              marginBottom: "8px",
+                              borderRadius: "8px",
+                              background: isSelected ? "#e3f2fd" : "white",
+                              border: isSelected ? "2px solid #2196f3" : "1px solid #e0e0e0",
+                              cursor: "pointer",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            <div style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
+                              gap: "10px"
+                            }}>
+                              <div style={{ flex: 1 }}>
+                                <p style={{
+                                  margin: 0,
+                                  fontSize: "14px",
+                                  fontWeight: isSelected ? "600" : "500",
+                                  color: "#333",
+                                  lineHeight: "1.5"
+                                }}>
+                                  {formatTicketNumber(ticket.number)}
+                                </p>
+                                <p style={{
+                                  margin: "4px 0 0 0",
+                                  fontSize: "13px",
+                                  color: "#666",
+                                  lineHeight: "1.4",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical"
+                                }}>
+                                  {ticket.title}
+                                </p>
+                                <p style={{
+                                  margin: "4px 0 0 0",
+                                  fontSize: "11px",
+                                  color: "#999"
+                                }}>
+                                  {ticketNotifications.length} notification{ticketNotifications.length > 1 ? "s" : ""}
+                                </p>
                               </div>
-                              <div style={{ marginTop: "4px", fontWeight: 500 }}>
-                                {h.old_status ? `${h.old_status} → ${h.new_status}` : h.new_status}
-                              </div>
-                              {h.user && (
-                                <div style={{ marginTop: "4px", fontSize: "12px", color: "#666" }}>
-                                  Par: {h.user.full_name}
+                              {unreadCount > 0 && (
+                                <div style={{
+                                  minWidth: "20px",
+                                  height: "20px",
+                                  borderRadius: "10px",
+                                  background: "#f44336",
+                                  color: "white",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "11px",
+                                  fontWeight: "600",
+                                  padding: "0 6px"
+                                }}>
+                                  {unreadCount}
                                 </div>
                               )}
-                              {h.reason && (
-                                <div style={{ marginTop: "4px", color: "#666" }}>Résumé de la résolution: {h.reason}</div>
-                              )}
                             </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
-                </>
-              ) : (
+                </div>
+
+                {/* Panneau droit - Détails du ticket sélectionné */}
                 <div style={{
                   flex: 1,
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#999"
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  background: "white",
+                  borderRadius: "0 8px 8px 0"
                 }}>
-                  Sélectionnez un ticket pour voir les détails
+                  {selectedNotificationTicketDetails ? (
+                    <>
+                      <div style={{
+                        padding: "28px 20px 20px 20px",
+                        borderBottom: "1px solid #e0e0e0",
+                        background: "white",
+                        borderRadius: "0 8px 0 0"
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
+                          {selectedNotificationTicketDetails.status === "rejete" && (
+                            <span style={{
+                              padding: "6px 10px",
+                              borderRadius: "16px",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              background: "#fee2e2",
+                              color: "#991b1b",
+                              border: "1px solid #fecaca"
+                            }}>
+                              Rejeté
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div style={{
+                        flex: 1,
+                        overflowY: "auto",
+                        padding: "20px"
+                      }}>
+                        <div style={{ marginBottom: "16px" }}>
+                          <strong>Titre :</strong>
+                          <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px" }}>
+                            {selectedNotificationTicketDetails.title}
+                          </p>
+                        </div>
+
+                        {selectedNotificationTicketDetails.description && (
+                          <div style={{ marginBottom: "16px" }}>
+                            <strong>Description :</strong>
+                            <p style={{ marginTop: "4px", padding: "8px", background: "#f8f9fa", borderRadius: "4px", whiteSpace: "pre-wrap" }}>
+                              {selectedNotificationTicketDetails.description}
+                            </p>
+                          </div>
+                        )}
+
+                        <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
+                          {selectedNotificationTicketDetails.type && (
+                            <div>
+                              <strong>Type :</strong>
+                              <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
+                                {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
+                              </span>
+                            </div>
+                          )}
+                          <div>
+                            <strong>Priorité :</strong>
+                            <span style={{
+                              marginLeft: "8px",
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              fontSize: "12px",
+                              fontWeight: "500",
+                              background: selectedNotificationTicketDetails.priority === "critique" ? "#f44336" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : selectedNotificationTicketDetails.priority === "faible" ? "#E5E7EB" : "#9e9e9e",
+                              color: selectedNotificationTicketDetails.priority === "critique" ? "#E53E3E" : selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : selectedNotificationTicketDetails.priority === "moyenne" ? "#0DADDB" : selectedNotificationTicketDetails.priority === "faible" ? "#6B7280" : "white"
+                            }}>
+                              {getPriorityLabel(selectedNotificationTicketDetails.priority)}
+                            </span>
+                          </div>
+                          <div>
+                            <strong>Statut :</strong>
+                            <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
+                              {selectedNotificationTicketDetails.status}
+                            </span>
+                          </div>
+                          {selectedNotificationTicketDetails.category && (
+                            <div>
+                              <strong>Catégorie :</strong>
+                              <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
+                                {selectedNotificationTicketDetails.category}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
+                          {selectedNotificationTicketDetails.creator && (
+                            <div>
+                              <strong>Créateur :</strong>
+                              <p style={{ marginTop: "4px" }}>
+                                {selectedNotificationTicketDetails.creator.full_name}
+                              </p>
+                            </div>
+                          )}
+                          {selectedNotificationTicketDetails.technician && (
+                            <div>
+                              <strong>Technicien assigné :</strong>
+                              <p style={{ marginTop: "4px" }}>
+                                {selectedNotificationTicketDetails.technician.full_name}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ marginTop: "24px", marginBottom: "16px" }}>
+                          <strong>Historique :</strong>
+                          <div style={{ marginTop: "8px" }}>
+                            {ticketHistory.length === 0 ? (
+                              <p style={{ color: "#999", fontStyle: "italic" }}>Aucun historique</p>
+                            ) : (
+                              ticketHistory.map((h) => (
+                                <div key={h.id} style={{ padding: "8px", marginTop: "4px", background: "#f8f9fa", borderRadius: "4px" }}>
+                                  <div style={{ fontSize: "12px", color: "#555" }}>
+                                    {new Date(h.changed_at).toLocaleString("fr-FR")}
+                                  </div>
+                                  <div style={{ marginTop: "4px", fontWeight: 500 }}>
+                                    {h.old_status ? `${h.old_status} → ${h.new_status}` : h.new_status}
+                                  </div>
+                                  {h.user && (
+                                    <div style={{ marginTop: "4px", fontSize: "12px", color: "#666" }}>
+                                      Par: {h.user.full_name}
+                                    </div>
+                                  )}
+                                  {h.reason && (
+                                    <div style={{ marginTop: "4px", color: "#666" }}>{h.reason}</div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#999"
+                    }}>
+                      Sélectionnez un ticket pour voir les détails
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
       </div>
 
        {/* Modal Ajouter un utilisateur */}
@@ -14875,7 +14876,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               flexShrink: 0
             }}>
               <div style={{
-                padding: "20px",
+                padding: "28px 20px 20px 20px",
                 borderBottom: "1px solid #e0e0e0",
                 display: "flex",
                 justifyContent: "space-between",
@@ -15039,17 +15040,33 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
-              background: "white"
+              background: "white",
+              borderRadius: "0 8px 8px 0"
             }}>
               {selectedNotificationTicketDetails ? (
                 <>
                   <div style={{
-                    padding: "20px",
+                    padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     background: "white",
                     borderRadius: "0 8px 0 0"
                   }}>
-                    <h3 style={{ margin: 0 }}>Détails du ticket {formatTicketNumber(selectedNotificationTicketDetails.number)}</h3>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket {formatTicketNumber(selectedNotificationTicketDetails.number)}</h3>
+                      {selectedNotificationTicketDetails.status === "rejete" && (
+                        <span style={{
+                          padding: "6px 10px",
+                          borderRadius: "16px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          background: "#fee2e2",
+                          color: "#991b1b",
+                          border: "1px solid #fecaca"
+                        }}>
+                          Rejeté
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
                   <div style={{

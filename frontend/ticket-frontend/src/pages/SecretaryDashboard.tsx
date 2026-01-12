@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Clock3, Users, CheckCircle2, ChevronRight, ChevronLeft, ChevronDown, LayoutDashboard, Bell, Search } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -142,6 +142,11 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [openActionsMenuFor, setOpenActionsMenuFor] = useState<string | null>(null);
   const [ticketSearchQuery, setTicketSearchQuery] = useState<string>("");
+
+  // Fonction helper pour formater le numéro de ticket en "TKT-XXX"
+  const formatTicketNumber = (number: number): string => {
+    return `TKT-${number.toString().padStart(3, '0')}`;
+  };
 
   // Fonction pour obtenir le libellé d'une priorité
   function getPriorityLabel(priority: string): string {
@@ -3139,10 +3144,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         {/* Section Notifications dans le contenu principal */}
         {activeSection === "notifications" && (
           <div style={{
-            flex: 1,
-            padding: "30px",
-            overflow: "hidden",
-            paddingTop: "80px",
             display: "flex",
             width: "100%",
             height: "calc(100vh - 80px)",
@@ -3153,8 +3154,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             background: "white",
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            position: "relative",
-            maxHeight: "calc(100vh - 80px)"
+            overflow: "hidden"
           }}>
             {/* Panneau gauche - Liste des tickets avec notifications */}
             <div style={{
@@ -3165,10 +3165,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               background: "#f8f9fa",
               borderRadius: "8px 0 0 8px",
               height: "100%",
-              maxHeight: "100%",
               overflow: "hidden",
-              flexShrink: 0,
-              position: "relative"
+              flexShrink: 0
             }}>
               <div style={{
                 padding: "28px 20px 20px 20px",
@@ -3177,15 +3175,14 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                 justifyContent: "space-between",
                 alignItems: "center",
                 background: "white",
-                borderRadius: "8px 0 0 0",
-                flexShrink: 0
+                borderRadius: "8px 0 0 0"
               }}>
                 <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>
                   Tickets avec notifications
                 </h3>
                 <button
                   onClick={() => {
-                    setActiveSection("dashboard");
+                    navigate("/dashboard/secretary");
                     setSelectedNotificationTicket(null);
                     setSelectedNotificationTicketDetails(null);
                   }}
@@ -3209,9 +3206,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               <div style={{
                 flex: 1,
                 overflowY: "auto",
-                overflowX: "hidden",
-                padding: "10px",
-                minHeight: 0
+                padding: "10px"
               }}>
                 {notificationsTickets.length === 0 ? (
                   <div style={{
@@ -3271,7 +3266,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                               color: "#333",
                               lineHeight: "1.5"
                             }}>
-                              Ticket #{ticket.number}
+                              {formatTicketNumber(ticket.number)}
                             </p>
                             <p style={{
                               margin: "4px 0 0 0",
@@ -3326,10 +3321,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               flexDirection: "column",
               overflow: "hidden",
               background: "white",
-              borderRadius: "0 8px 8px 0",
-              position: "relative",
-              height: "100%",
-              maxHeight: "100%"
+              borderRadius: "0 8px 8px 0"
             }}>
               {selectedNotificationTicketDetails ? (
                 <>
@@ -3337,8 +3329,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     padding: "28px 20px 20px 20px",
                     borderBottom: "1px solid #e0e0e0",
                     background: "white",
-                    borderRadius: "0 8px 0 0",
-                    flexShrink: 0
+                    borderRadius: "0 8px 0 0"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
@@ -3361,9 +3352,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                   <div style={{
                     flex: 1,
                     overflowY: "auto",
-                    overflowX: "hidden",
-                    padding: "20px",
-                    minHeight: 0
+                    padding: "20px"
                   }}>
                     <div style={{ marginBottom: "16px" }}>
                       <strong>Titre :</strong>
@@ -3382,12 +3371,14 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     )}
 
                     <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
-                      <div>
-                        <strong>Type :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
-                        </span>
-                      </div>
+                      {selectedNotificationTicketDetails.type && (
+                        <div>
+                          <strong>Type :</strong>
+                          <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
+                            {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
+                          </span>
+                        </div>
+                      )}
                       <div>
                         <strong>Priorité :</strong>
                         <span style={{
@@ -3396,10 +3387,10 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           borderRadius: "4px",
                           fontSize: "12px",
                           fontWeight: "500",
-                          background: selectedNotificationTicketDetails.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : "#9e9e9e",
-                          color: selectedNotificationTicketDetails.priority === "critique" ? "#E53E3E" : selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : "white"
+                          background: selectedNotificationTicketDetails.priority === "critique" ? "#f44336" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : selectedNotificationTicketDetails.priority === "faible" ? "#E5E7EB" : "#9e9e9e",
+                          color: selectedNotificationTicketDetails.priority === "critique" ? "#E53E3E" : selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : selectedNotificationTicketDetails.priority === "moyenne" ? "#0DADDB" : selectedNotificationTicketDetails.priority === "faible" ? "#6B7280" : "white"
                         }}>
-                          {selectedNotificationTicketDetails.priority}
+                          {getPriorityLabel(selectedNotificationTicketDetails.priority)}
                         </span>
                       </div>
                       <div>
@@ -3424,7 +3415,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           <strong>Créateur :</strong>
                           <p style={{ marginTop: "4px" }}>
                             {selectedNotificationTicketDetails.creator.full_name}
-                            {selectedNotificationTicketDetails.creator.agency && ` - ${selectedNotificationTicketDetails.creator.agency}`}
                           </p>
                         </div>
                       )}
@@ -3458,7 +3448,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                 </div>
                               )}
                               {h.reason && (
-                                <div style={{ marginTop: "4px", color: "#666" }}>Résumé de la résolution: {h.reason}</div>
+                                <div style={{ marginTop: "4px", color: "#666" }}>{h.reason}</div>
                               )}
                             </div>
                           ))
@@ -8387,6 +8377,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               flexDirection: "column",
               overflow: "hidden",
               background: "white",
+              borderRadius: "0 8px 8px 0",
               position: "relative",
               height: "100%",
               maxHeight: "100%"
@@ -8402,6 +8393,19 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#333" }}>Détails du ticket #{selectedNotificationTicketDetails.number}</h3>
+                      {selectedNotificationTicketDetails.status === "rejete" && (
+                        <span style={{
+                          padding: "6px 10px",
+                          borderRadius: "16px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          background: "#fee2e2",
+                          color: "#991b1b",
+                          border: "1px solid #fecaca"
+                        }}>
+                          Rejeté
+                        </span>
+                      )}
                     </div>
                   </div>
                   
