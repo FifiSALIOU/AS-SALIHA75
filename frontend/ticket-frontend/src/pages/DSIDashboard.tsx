@@ -21,7 +21,8 @@ import {
   ResponsiveContainer,
   Cell,
   PieChart,
-  Pie
+  Pie,
+  LabelList
 } from "recharts";
 
 interface DSIDashboardProps {
@@ -110,6 +111,49 @@ interface UserRead {
     name: string;
   } | null;
 }
+
+// Composant Label personnalisé pour les donut charts avec labels externes et lignes de connexion
+const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name, fill }: any) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  
+  // Position externe pour le label (outerRadius + 20px = 130px du centre)
+  const labelRadius = outerRadius + 20;
+  const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
+  const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
+  
+  // Point de connexion sur le bord externe
+  const connectX = cx + outerRadius * Math.cos(-midAngle * RADIAN);
+  const connectY = cy + outerRadius * Math.sin(-midAngle * RADIAN);
+  
+  return (
+    <g>
+      {/* Ligne de connexion */}
+      <line
+        x1={connectX}
+        y1={connectY}
+        x2={labelX}
+        y2={labelY}
+        stroke={fill}
+        strokeWidth={1.5}
+      />
+      {/* Label externe */}
+      <text
+        x={labelX}
+        y={labelY}
+        fill={fill}
+        textAnchor={labelX > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize="13px"
+        fontWeight="500"
+      >
+        {name} ({Math.round(percent * 100)}%)
+      </text>
+    </g>
+  );
+};
 
 function DSIDashboard({ token }: DSIDashboardProps) {
   const [searchParams] = useSearchParams();
@@ -2660,6 +2704,62 @@ function DSIDashboard({ token }: DSIDashboardProps) {
         Applicatif: applicatifTickets.length
       };
     });
+  };
+
+  // Fonction pour préparer les données du graphique "Répartition par priorité"
+  const preparePriorityData = () => {
+    const critique = allTickets.filter(t => t.priority === "critique").length;
+    const haute = allTickets.filter(t => t.priority === "haute").length;
+    const moyenne = allTickets.filter(t => t.priority === "moyenne").length;
+    const basse = allTickets.filter(t => t.priority === "basse" || t.priority === "faible").length;
+    const total = allTickets.length;
+    
+    return [
+      { name: "Critique", value: critique, percentage: total > 0 ? Math.round((critique / total) * 100) : 0 },
+      { name: "Haute", value: haute, percentage: total > 0 ? Math.round((haute / total) * 100) : 0 },
+      { name: "Moyenne", value: moyenne, percentage: total > 0 ? Math.round((moyenne / total) * 100) : 0 },
+      { name: "Basse", value: basse, percentage: total > 0 ? Math.round((basse / total) * 100) : 0 }
+    ];
+  };
+
+  // Fonction pour préparer les données du graphique "Répartition par statut"
+  const prepareStatusData = () => {
+    // Tickets délégués (priorité sur les autres catégories)
+    const delegue = allTickets.filter(t => t.secretary_id !== null && t.secretary_id !== undefined).length;
+    
+    // Tickets en cours (excluant les délégués)
+    const enCours = allTickets.filter(t => 
+      (t.status === "en_cours" || t.status === "assigne_technicien") && 
+      (t.secretary_id === null || t.secretary_id === undefined)
+    ).length;
+    
+    // Tickets ouverts (excluant les délégués)
+    const ouvert = allTickets.filter(t => 
+      (t.status === "ouvert" || t.status === "en_attente_analyse") && 
+      (t.secretary_id === null || t.secretary_id === undefined)
+    ).length;
+    
+    // Tickets relancés (excluant les délégués)
+    const relance = allTickets.filter(t => 
+      (t.status === "relance" || t.status === "relancé") && 
+      (t.secretary_id === null || t.secretary_id === undefined)
+    ).length;
+    
+    // Tickets résolus (excluant les délégués)
+    const resolu = allTickets.filter(t => 
+      t.status === "resolu" && 
+      (t.secretary_id === null || t.secretary_id === undefined)
+    ).length;
+    
+    const total = allTickets.length;
+    
+    return [
+      { name: "En cours", value: enCours, percentage: total > 0 ? Math.round((enCours / total) * 100) : 0 },
+      { name: "Ouvert", value: ouvert, percentage: total > 0 ? Math.round((ouvert / total) * 100) : 0 },
+      { name: "Relancé", value: relance, percentage: total > 0 ? Math.round((relance / total) * 100) : 0 },
+      { name: "Résolu", value: resolu, percentage: total > 0 ? Math.round((resolu / total) * 100) : 0 },
+      { name: "Délégué", value: delegue, percentage: total > 0 ? Math.round((delegue / total) * 100) : 0 }
+    ];
   };
 
   // Couleurs pour les graphiques
@@ -7491,6 +7591,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               )}
 
               {selectedReport === "statistiques" && (
+                <>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "32px" }}>
                   {/* Graphique 1: Tickets cette semaine */}
                   <div style={{ background: "white", padding: "24px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
@@ -7605,6 +7706,105 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     </ResponsiveContainer>
                   </div>
                 </div>
+
+                {/* Deuxième ligne de graphiques - Donut charts */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "24px" }}>
+                  {/* Graphique 3: Répartition par priorité */}
+                  <div style={{ background: "white", padding: "24px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+                    <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+                      Répartition par priorité
+                    </h3>
+                    <ResponsiveContainer width="100%" height={320}>
+                      <PieChart>
+                        <Pie
+                          data={preparePriorityData()}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={110}
+                          paddingAngle={3}
+                          dataKey="value"
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          label={CustomLabel}
+                          labelLine={false}
+                        >
+                          {preparePriorityData().map((entry, index) => {
+                            const colors = {
+                              "Critique": "#dc2626",
+                              "Haute": "#FF9500",
+                              "Moyenne": "#EAB308",
+                              "Basse": "#22C55E"
+                            };
+                            return (
+                              <Cell key={`cell-${index}`} fill={colors[entry.name as keyof typeof colors]} />
+                            );
+                          })}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: "white", 
+                            border: "1px solid #e5e7eb", 
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                          }}
+                          formatter={(value: number, name: string, props: any) => {
+                            return [`${value} (${props.payload.percentage}%)`, name];
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Graphique 4: Répartition par statut */}
+                  <div style={{ background: "white", padding: "24px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+                    <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+                      Répartition par statut
+                    </h3>
+                    <ResponsiveContainer width="100%" height={320}>
+                      <PieChart>
+                        <Pie
+                          data={prepareStatusData()}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={110}
+                          paddingAngle={3}
+                          dataKey="value"
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          label={CustomLabel}
+                          labelLine={false}
+                        >
+                          {prepareStatusData().map((entry, index) => {
+                            const colors = {
+                              "En cours": "#FF9500",
+                              "Ouvert": "#3B82F6",
+                              "Relancé": "#EF4444",
+                              "Résolu": "#22C55E",
+                              "Délégué": "#8B5CF6"
+                            };
+                            return (
+                              <Cell key={`cell-${index}`} fill={colors[entry.name as keyof typeof colors]} />
+                            );
+                          })}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: "white", 
+                            border: "1px solid #e5e7eb", 
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                          }}
+                          formatter={(value: number, name: string, props: any) => {
+                            return [`${value} (${props.payload.percentage}%)`, name];
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                </>
               )}
 
               {selectedReport === "metriques" && (() => {
