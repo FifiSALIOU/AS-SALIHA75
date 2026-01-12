@@ -5884,7 +5884,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               width: "40px",
               height: "40px",
               borderRadius: "12px",
-              background: "hsla(142, 76%, 85%, 0.1)",
+              background: "hsla(142, 76%, 85%, 0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -6887,16 +6887,69 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
           {activeSection === "tickets" && !showTicketDetailsPage && (
             <>
+              {/* Barre de recherche */}
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                position: "relative",
+                width: "100%",
+                maxWidth: "500px",
+                marginTop: "24px",
+                marginBottom: "16px"
+              }}>
+                <Search 
+                  size={18} 
+                  color="#6b7280" 
+                  style={{ 
+                    position: "absolute", 
+                    left: "12px", 
+                    pointerEvents: "none",
+                    zIndex: 1
+                  }} 
+                />
+                <input
+                  type="text"
+                  placeholder="Rechercher un ticket..."
+                  value={ticketSearchQuery}
+                  onChange={(e) => {
+                    setTicketSearchQuery(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      loadTickets(ticketSearchQuery);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px 8px 38px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontFamily: "system-ui, -apple-system, sans-serif",
+                    backgroundColor: "#f9fafb",
+                    color: "#111827",
+                    outline: "none",
+                    transition: "border-color 0.2s",
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#3b82f6";
+                    e.currentTarget.style.backgroundColor = "#ffffff";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#e5e7eb";
+                    e.currentTarget.style.backgroundColor = "#f9fafb";
+                  }}
+                />
+              </div>
+
               <div style={{ 
                 display: "flex", 
                 gap: "16px", 
-                marginTop: "24px",
+                marginTop: "0px",
                 marginBottom: "24px", 
                 flexWrap: "wrap",
-                background: "white",
                 padding: "16px",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                borderRadius: "8px"
               }}>
                 <div style={{ flex: 1, minWidth: "200px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500", color: "#666" }}>Filtrer par statut</label>
