@@ -5883,14 +5883,14 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               top: "16px",
               width: "40px",
               height: "40px",
-              borderRadius: "10px",
-              background: "#dcfce7",
+              borderRadius: "12px",
+              background: "hsla(142, 76%, 85%, 0.1)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <UserCheck size={20} color="#16a34a" />
+            <TrendingUp size={20} color="hsl(142, 76%, 36%)" />
           </div>
           <div
             style={{
@@ -5915,7 +5915,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
       {userRole === "DSI" && (
         <>
           {/* Tableau des tickets récents */}
-          <h3 style={{ marginTop: "8px", marginBottom: "12px", fontSize: "22px", fontWeight: "600", color: "#333" }}>
+          <h3 style={{ marginTop: "32px", marginBottom: "12px", fontSize: "22px", fontWeight: "600", color: "#333" }}>
             Tickets Récents
           </h3>
           {/* Tickets Cards */}
