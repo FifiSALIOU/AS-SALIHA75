@@ -8055,8 +8055,26 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                   borderRadius: "8px",
                                   boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
                                 }}
-                                formatter={(value: any, name: any, props: any) => {
-                                  return [`Résolus : ${value}`, ""];
+                                content={({ active, payload, label }: any) => {
+                                  if (active && payload && payload.length) {
+                                    return (
+                                      <div style={{
+                                        backgroundColor: "white",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: "8px",
+                                        padding: "8px 12px",
+                                        boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                                      }}>
+                                        <div style={{ color: "#111827", marginBottom: "4px" }}>
+                                          {label}
+                                        </div>
+                                        <div style={{ color: "#FF9500" }}>
+                                          Résolus : {payload[0].value}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
                                 }}
                               />
                               <Bar 
