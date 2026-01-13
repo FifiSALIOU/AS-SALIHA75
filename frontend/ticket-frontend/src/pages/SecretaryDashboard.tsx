@@ -3813,29 +3813,24 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             borderRadius: "12px",
             padding: "10px 12px",
             boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+            position: "relative",
           }}
         >
           <div
             style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "#fff4e6",
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              marginBottom: "8px",
+              justifyContent: "center",
+              position: "absolute",
+              top: "10px",
+              right: "12px",
             }}
           >
-            <div
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "10px",
-                background: "#fff4e6",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Clock3 size={18} color="#ff8a3c" />
-            </div>
+            <Clock3 size={18} color="#ff8a3c" />
           </div>
           <div
             style={{
@@ -3862,6 +3857,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             borderRadius: "12px",
             padding: "10px 12px",
             boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+            position: "relative",
           }}
         >
           <div
@@ -3873,7 +3869,9 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: "8px",
+              position: "absolute",
+              top: "10px",
+              right: "12px",
             }}
           >
             <Forward size={18} color="#9333ea" />
@@ -3903,6 +3901,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             borderRadius: "12px",
             padding: "10px 12px",
             boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+            position: "relative",
           }}
         >
           <div
@@ -3914,7 +3913,9 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: "8px",
+              position: "absolute",
+              top: "10px",
+              right: "12px",
             }}
           >
             <Users size={18} color="#2563eb" />
@@ -3944,6 +3945,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             borderRadius: "12px",
             padding: "10px 12px",
             boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+            position: "relative",
           }}
         >
           <div
@@ -3955,7 +3957,9 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: "8px",
+              position: "absolute",
+              top: "10px",
+              right: "12px",
             }}
           >
             <CheckCircle2 size={18} color="#16a34a" />
