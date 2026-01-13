@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Clock3, Users, CheckCircle2, ChevronRight, ChevronLeft, ChevronDown, LayoutDashboard, Bell, Search, Clock, Monitor, Wrench } from "lucide-react";
+import { Clock3, Users, CheckCircle2, ChevronRight, ChevronLeft, ChevronDown, LayoutDashboard, Bell, Search, Clock, Monitor, Wrench, Forward } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -3801,7 +3801,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, minmax(200px, 1fr))",
+          gridTemplateColumns: "repeat(4, minmax(200px, 1fr))",
           gap: "10px",
           margin: "20px 0",
         }}
@@ -3852,6 +3852,47 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
           </div>
           <div style={{ marginTop: "2px", fontSize: "10px", color: "#6b7280" }}>
             Action requise
+          </div>
+        </div>
+
+        {/* Tickets délégués */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: "12px",
+            padding: "10px 12px",
+            boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+          }}
+        >
+          <div
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "#f3e8ff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <Forward size={18} color="#9333ea" />
+          </div>
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: 700,
+              color: "#111827",
+              marginBottom: "3px",
+            }}
+          >
+            {delegatedTicketsByDSI.size}
+          </div>
+          <div style={{ fontSize: "11px", fontWeight: 500, color: "#374151" }}>
+            Tickets délégués
+          </div>
+          <div style={{ marginTop: "2px", fontSize: "10px", color: "#6b7280" }}>
+            Par le DSI
           </div>
         </div>
 
