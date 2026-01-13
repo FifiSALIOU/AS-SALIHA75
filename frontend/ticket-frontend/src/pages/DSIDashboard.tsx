@@ -8132,13 +8132,13 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "4px",
-                                fontSize: "14px",
+                                fontSize: isSpecialTechnician ? "12px" : "14px",
                                 fontWeight: 400,
                                 color: isSpecialTechnician ? "#000000" : "#808080",
                                 flexShrink: 0
                               }}
                             >
-                              <Clock className="h-3 w-3" style={{ width: "12px", height: "12px", color: isSpecialTechnician ? "#000000" : "#808080" }} />
+                              <Clock className="h-3 w-3" style={{ width: isSpecialTechnician ? "10px" : "12px", height: isSpecialTechnician ? "10px" : "12px", color: isSpecialTechnician ? "#000000" : "#808080" }} />
                               <span>{tech.avgTimeHours > 0 ? `${tech.avgTimeHours.toFixed(1)}h moy.` : "N/A"}</span>
                             </div>
 
