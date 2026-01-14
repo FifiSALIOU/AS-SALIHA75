@@ -60,7 +60,7 @@ function App() {
       case "Adjoint DSI":
         return <Navigate to="/dashboard/adjoint" replace />;
       case "Technicien":
-        return <TechnicianDashboard token={token} />;
+        return <Navigate to="/dashboard/techniciens" replace />;
       case "DSI":
       case "Admin":  // Admin a les mêmes droits que DSI
         return <Navigate to="/dashboard/dsi" replace />;
@@ -113,7 +113,23 @@ function App() {
           element={token ? <SecretaryDashboard token={token} /> : <Navigate to="/" replace />}
         />
         <Route
-          path="/dashboard/technician"
+          path="/dashboard/techniciens"
+          element={token ? <TechnicianDashboard token={token} /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/dashboard/techniciens/ticketsencours"
+          element={token ? <TechnicianDashboard token={token} /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/dashboard/techniciens/ticketsresolus"
+          element={token ? <TechnicianDashboard token={token} /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/dashboard/techniciens/ticketsrejetes"
+          element={token ? <TechnicianDashboard token={token} /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/dashboard/techniciens/actifs"
           element={token ? <TechnicianDashboard token={token} /> : <Navigate to="/" replace />}
         />
         <Route

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { PanelLeft, ClipboardList, Clock3, CheckCircle2, LayoutDashboard, ChevronLeft, ChevronRight, Bell, Search, Box, Clock, Monitor, Wrench } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 
@@ -64,6 +64,8 @@ interface TicketHistory {
 
 function TechnicianDashboard({ token }: TechnicianDashboardProps) {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
@@ -95,6 +97,24 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [openActionsMenuFor, setOpenActionsMenuFor] = useState<string | null>(null);
   const [ticketSearchQuery, setTicketSearchQuery] = useState<string>("");
+
+  // Fonction pour déterminer la section active basée sur l'URL
+  function getActiveSectionFromPath(): string {
+    if (location.pathname === "/dashboard/techniciens/ticketsencours") return "tickets-en-cours";
+    if (location.pathname === "/dashboard/techniciens/ticketsresolus") return "tickets-resolus";
+    if (location.pathname === "/dashboard/techniciens/ticketsrejetes") return "tickets-rejetes";
+    if (location.pathname === "/dashboard/techniciens/actifs") return "actifs";
+    if (location.pathname === "/dashboard/techniciens") return "dashboard";
+    return activeSection;
+  }
+
+  const currentActiveSection = getActiveSectionFromPath();
+
+  // Synchroniser activeSection avec l'URL
+  useEffect(() => {
+    const sectionFromPath = getActiveSectionFromPath();
+    setActiveSection(sectionFromPath);
+  }, [location.pathname]);
 
   // Fonction pour obtenir le libellé d'une priorité
   function getPriorityLabel(priority: string): string {
@@ -952,13 +972,13 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         )}
         
         <div 
-          onClick={() => setActiveSection("dashboard")}
+          onClick={() => navigate("/dashboard/techniciens")}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "dashboard" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "dashboard" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             transition: "background 0.2s",
@@ -966,20 +986,20 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <LayoutDashboard size={18} color={activeSection === "dashboard" ? "white" : "rgba(180, 180, 180, 0.7)"} />
+            <LayoutDashboard size={18} color={currentActiveSection === "dashboard" ? "white" : "rgba(180, 180, 180, 0.7)"} />
           </div>
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Tableau de Bord</div>
         </div>
         
         {/* Tickets en cours */}
         <div 
-          onClick={() => setActiveSection("tickets-en-cours")}
+          onClick={() => navigate("/dashboard/techniciens/ticketsencours")}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "tickets-en-cours" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "tickets-en-cours" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             transition: "background 0.2s",
@@ -987,7 +1007,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeSection === "tickets-en-cours" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={currentActiveSection === "tickets-en-cours" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
@@ -995,13 +1015,13 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Tickets en cours</div>
         </div>
         <div 
-          onClick={() => setActiveSection("tickets-resolus")}
+          onClick={() => navigate("/dashboard/techniciens/ticketsresolus")}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "tickets-resolus" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "tickets-resolus" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             transition: "background 0.2s",
@@ -1009,7 +1029,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeSection === "tickets-resolus" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={currentActiveSection === "tickets-resolus" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="8 12 11 15 16 9"></polyline>
             </svg>
@@ -1017,13 +1037,13 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Tickets Résolus</div>
         </div>
         <div 
-          onClick={() => setActiveSection("tickets-rejetes")}
+          onClick={() => navigate("/dashboard/techniciens/ticketsrejetes")}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "tickets-rejetes" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "tickets-rejetes" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             transition: "background 0.2s",
@@ -1031,14 +1051,14 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeSection === "tickets-rejetes" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={currentActiveSection === "tickets-rejetes" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="15" y1="9" x2="9" y2="15"></line>
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500", color: activeSection === "tickets-rejetes" ? "white" : "inherit" }}>Tickets Rejetés</span>
+            <span style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500", color: currentActiveSection === "tickets-rejetes" ? "white" : "inherit" }}>Tickets Rejetés</span>
             {rejectedCount > 0 && (
               <span
                 style={{
@@ -1061,13 +1081,13 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           </div>
         </div>
         <div 
-          onClick={() => setActiveSection("actifs")}
+          onClick={() => navigate("/dashboard/techniciens/actifs")}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "actifs" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "actifs" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             transition: "background 0.2s",
@@ -1075,7 +1095,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Box size={18} color={activeSection === "actifs" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2} />
+            <Box size={18} color={currentActiveSection === "actifs" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2} />
           </div>
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Actifs</div>
         </div>
@@ -1367,7 +1387,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         </div>
 
         {/* Contenu principal avec scroll */}
-        <div style={{ flex: 1, padding: "30px", overflow: activeSection === "notifications" ? "hidden" : "auto", paddingTop: "80px" }}>
+        <div style={{ flex: 1, padding: "30px", overflow: currentActiveSection === "notifications" ? "hidden" : "auto", paddingTop: "80px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         {/* Affichage des détails du ticket en pleine page */}
         {showTicketDetailsPage && ticketDetails ? (
@@ -1667,7 +1687,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           </div>
         ) : (
           <>
-            {activeSection === "dashboard" && (
+            {currentActiveSection === "dashboard" && (
               <div style={{ marginTop: "32px", marginBottom: "20px" }}>
                 <div style={{ fontSize: "22px", fontWeight: 700, color: "#111827", marginBottom: "4px" }}>
                   Espace Technicien 🔧
@@ -1677,7 +1697,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                 </div>
               </div>
             )}
-            {activeSection === "dashboard" && (
+            {currentActiveSection === "dashboard" && (
               <>
                 <h2></h2>
 
@@ -2582,7 +2602,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
             )}
 
             {/* Section Tickets en cours */}
-            {activeSection === "tickets-en-cours" && (
+            {currentActiveSection === "tickets-en-cours" && (
               <div style={{ marginTop: "24px" }}>
                 {/* Tickets Cards */}
                 <div
@@ -2981,7 +3001,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               </div>
             )}
 
-            {activeSection === "tickets-resolus" && (
+            {currentActiveSection === "tickets-resolus" && (
               <div style={{ marginTop: "24px" }}>
                 {/* Tickets Cards */}
                 <div
@@ -3307,7 +3327,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               </div>
             )}
 
-            {activeSection === "tickets-rejetes" && (
+            {currentActiveSection === "tickets-rejetes" && (
               <div style={{ marginTop: "24px" }}>
                 {/* Tickets Cards */}
                 <div
@@ -3653,7 +3673,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
             )}
 
             {/* Section Notifications dans le contenu principal */}
-            {activeSection === "notifications" && (
+            {currentActiveSection === "notifications" && (
               <div ref={notificationsSectionRef} style={{
                 display: "flex",
                 width: "100%",
@@ -3693,7 +3713,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                     </h3>
                     <button
                       onClick={() => {
-                        setActiveSection("dashboard");
+                        navigate("/dashboard/techniciens");
                         setSelectedNotificationTicket(null);
                         setSelectedNotificationTicketDetails(null);
                       }}
