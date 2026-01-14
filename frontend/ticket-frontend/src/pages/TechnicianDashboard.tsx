@@ -1373,8 +1373,31 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                       background: "white",
                       boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                       minHeight: "100px",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1)";
                     }}
                   >
+                    {/* Cercle décoratif orange en arrière-plan - coin supérieur droit */}
+                    <div
+                      className="kpi-badge-tech"
+                      style={{
+                        position: "absolute",
+                        right: "-16px",
+                        top: "-16px",
+                        width: "96px",
+                        height: "96px",
+                        borderRadius: "50%",
+                        background: "rgba(255, 138, 60, 0.05)",
+                        transition: "transform 500ms ease",
+                      }}
+                    />
                     <div
                       style={{
                         display: "flex",
@@ -1382,6 +1405,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                         alignItems: "flex-start",
                         width: "100%",
                         marginBottom: "8px",
+                        zIndex: 1,
                       }}
                     >
                       <div
@@ -1441,8 +1465,31 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                       background: "white",
                       boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                       minHeight: "100px",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1)";
                     }}
                   >
+                    {/* Cercle décoratif orange en arrière-plan - coin supérieur droit */}
+                    <div
+                      className="kpi-badge-tech"
+                      style={{
+                        position: "absolute",
+                        right: "-16px",
+                        top: "-16px",
+                        width: "96px",
+                        height: "96px",
+                        borderRadius: "50%",
+                        background: "rgba(255, 138, 60, 0.05)",
+                        transition: "transform 500ms ease",
+                      }}
+                    />
                     <div
                       style={{
                         display: "flex",
@@ -1450,6 +1497,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                         alignItems: "flex-start",
                         width: "100%",
                         marginBottom: "8px",
+                        zIndex: 1,
                       }}
                     >
                       <div
@@ -1509,8 +1557,31 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                       background: "white",
                       boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                       minHeight: "100px",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1)";
                     }}
                   >
+                    {/* Cercle décoratif orange en arrière-plan - coin supérieur droit */}
+                    <div
+                      className="kpi-badge-tech"
+                      style={{
+                        position: "absolute",
+                        right: "-16px",
+                        top: "-16px",
+                        width: "96px",
+                        height: "96px",
+                        borderRadius: "50%",
+                        background: "rgba(255, 138, 60, 0.05)",
+                        transition: "transform 500ms ease",
+                      }}
+                    />
                     <div
                       style={{
                         display: "flex",
@@ -1518,6 +1589,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                         alignItems: "flex-start",
                         width: "100%",
                         marginBottom: "8px",
+                        zIndex: 1,
                       }}
                     >
                       <div
@@ -1577,8 +1649,31 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                       background: "white",
                       boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                       minHeight: "100px",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const badge = e.currentTarget.querySelector('.kpi-badge-tech') as HTMLElement;
+                      if (badge) badge.style.transform = "scale(1)";
                     }}
                   >
+                    {/* Cercle décoratif orange en arrière-plan - coin supérieur droit */}
+                    <div
+                      className="kpi-badge-tech"
+                      style={{
+                        position: "absolute",
+                        right: "-16px",
+                        top: "-16px",
+                        width: "96px",
+                        height: "96px",
+                        borderRadius: "50%",
+                        background: "rgba(255, 138, 60, 0.05)",
+                        transition: "transform 500ms ease",
+                      }}
+                    />
                     <div
                       style={{
                         display: "flex",
@@ -1586,6 +1681,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                         alignItems: "flex-start",
                         width: "100%",
                         marginBottom: "8px",
+                        zIndex: 1,
                       }}
                     >
                       <div
