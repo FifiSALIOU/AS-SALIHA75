@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { Clock3, Users, CheckCircle2, ChevronRight, ChevronLeft, ChevronDown, LayoutDashboard, Bell, Search, Clock, Monitor, Wrench, Forward, AlertTriangle, BarChart3 } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -93,6 +93,8 @@ interface UserRead {
 
 function SecretaryDashboard({ token }: SecretaryDashboardProps) {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
@@ -142,6 +144,28 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
   const [openActionsMenuFor, setOpenActionsMenuFor] = useState<string | null>(null);
   const [ticketSearchQuery, setTicketSearchQuery] = useState<string>("");
   const [delegatedTicketsByDSI, setDelegatedTicketsByDSI] = useState<Set<string>>(new Set());
+
+  // Fonction pour déterminer la section active basée sur l'URL (uniquement pour Adjoint DSI)
+  function getActiveSectionFromPath(): string {
+    if (roleName !== "Adjoint DSI") {
+      return activeSection;
+    }
+    if (location.pathname === "/dashboard/adjoint/statistics") return "reports";
+    if (location.pathname === "/dashboard/adjoint/technicians") return "technicians";
+    if (location.pathname === "/dashboard/adjoint/tickets") return "tickets";
+    if (location.pathname === "/dashboard/adjoint") return "dashboard";
+    return activeSection;
+  }
+
+  const currentActiveSection = getActiveSectionFromPath();
+
+  // Synchroniser activeSection avec l'URL pour Adjoint DSI
+  useEffect(() => {
+    if (roleName === "Adjoint DSI") {
+      const sectionFromPath = getActiveSectionFromPath();
+      setActiveSection(sectionFromPath);
+    }
+  }, [location.pathname, roleName]);
 
   // Fonction pour obtenir le libellé d'une priorité
   function getPriorityLabel(priority: string): string {
@@ -2323,10 +2347,10 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
   // Charger les tickets avec notifications quand la vue s'ouvre
   useEffect(() => {
-    if ((activeSection === "notifications" || showNotificationsTicketsView) && notifications.length > 0) {
+    if ((currentActiveSection === "notifications" || showNotificationsTicketsView) && notifications.length > 0) {
       void loadNotificationsTickets();
     }
-  }, [activeSection, showNotificationsTicketsView, notifications.length]);
+  }, [activeSection, location.pathname, roleName, showNotificationsTicketsView, notifications.length]);
 
   // Scroller vers le haut quand le panneau de notifications s'ouvre
   useEffect(() => {
@@ -2337,7 +2361,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
   // Charger automatiquement les détails du ticket sélectionné dans la section notifications
   useEffect(() => {
-    if (activeSection === "notifications" && selectedNotificationTicket) {
+    if (currentActiveSection === "notifications" && selectedNotificationTicket) {
       async function loadDetails() {
         try {
           const res = await fetch(`http://localhost:8000/tickets/${selectedNotificationTicket}`, {
@@ -2358,7 +2382,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
       }
       void loadDetails();
     }
-  }, [activeSection, selectedNotificationTicket, token]);
+  }, [activeSection, location.pathname, roleName, selectedNotificationTicket, token]);
 
   async function handleReassign(ticketId: string) {
     if (!selectedTechnician) {
@@ -2793,42 +2817,53 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         )}
         
         <div 
-          onClick={() => setActiveSection("dashboard")}
+          onClick={() => {
+            if (roleName === "Adjoint DSI") {
+              navigate("/dashboard/adjoint");
+            } else {
+              setActiveSection("dashboard");
+            }
+          }}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "dashboard" ? "hsl(25, 95%, 53%)" : "transparent", 
+            background: currentActiveSection === "dashboard" ? "hsl(25, 95%, 53%)" : "transparent", 
             borderRadius: "8px",
             cursor: "pointer",
             marginBottom: "8px"
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <LayoutDashboard size={18} color={activeSection === "dashboard" ? "white" : "rgba(180, 180, 180, 0.7)"} />
+            <LayoutDashboard size={18} color={currentActiveSection === "dashboard" ? "white" : "rgba(180, 180, 180, 0.7)"} />
           </div>
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Tableau de Bord</div>
         </div>
         
         <div 
           onClick={() => {
-            setStatusFilter("all");
-            setActiveSection("tickets");
+            if (roleName === "Adjoint DSI") {
+              setStatusFilter("all");
+              navigate("/dashboard/adjoint/tickets");
+            } else {
+              setStatusFilter("all");
+              setActiveSection("tickets");
+            }
           }}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "tickets" ? "hsl(25, 95%, 53%)" : "transparent",
+            background: currentActiveSection === "tickets" ? "hsl(25, 95%, 53%)" : "transparent",
             borderRadius: "8px",
             cursor: "pointer",
             marginBottom: "8px"
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeSection === "tickets" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={currentActiveSection === "tickets" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="9" y="2" width="6" height="4" rx="1" />
               <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2" />
               <line x1="8" y1="10" x2="16" y2="10" />
@@ -2841,41 +2876,51 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         
         <div 
           onClick={() => {
-            setActiveSection("technicians");
+            if (roleName === "Adjoint DSI") {
+              navigate("/dashboard/adjoint/technicians");
+            } else {
+              setActiveSection("technicians");
+            }
           }}
           style={{ 
             display: "flex", 
             alignItems: "center", 
             gap: "12px", 
             padding: "10px", 
-            background: activeSection === "technicians" ? "hsl(25, 95%, 53%)" : "transparent",
+            background: currentActiveSection === "technicians" ? "hsl(25, 95%, 53%)" : "transparent",
             borderRadius: "8px",
             cursor: "pointer",
             marginBottom: "8px"
           }}
         >
           <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Wrench size={18} color={activeSection === "technicians" ? "white" : "rgba(180, 180, 180, 0.7)"} />
+            <Wrench size={18} color={currentActiveSection === "technicians" ? "white" : "rgba(180, 180, 180, 0.7)"} />
           </div>
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Techniciens</div>
         </div>
         
         {(roleName === "Adjoint DSI" || roleName === "DSI" || roleName === "Admin") && (
           <div 
-            onClick={() => setActiveSection("reports")}
+            onClick={() => {
+              if (roleName === "Adjoint DSI") {
+                navigate("/dashboard/adjoint/statistics");
+              } else {
+                setActiveSection("reports");
+              }
+            }}
             style={{ 
               display: "flex", 
               alignItems: "center", 
               gap: "12px", 
               padding: "10px", 
-              background: activeSection === "reports" ? "hsl(25, 95%, 53%)" : "transparent",
+              background: currentActiveSection === "reports" ? "hsl(25, 95%, 53%)" : "transparent",
               borderRadius: "8px",
               cursor: "pointer",
               marginBottom: "8px"
             }}
           >
             <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <BarChart3 size={20} color={activeSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2.5} />
+              <BarChart3 size={20} color={currentActiveSection === "reports" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2.5} />
             </div>
             <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Statistiques</div>
           </div>
@@ -3170,7 +3215,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         </div>
 
         {/* Section Notifications dans le contenu principal */}
-        {activeSection === "notifications" && (
+        {currentActiveSection === "notifications" && (
           <div style={{
             display: "flex",
             width: "100%",
@@ -3501,7 +3546,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         )}
 
         {/* Contenu principal avec scroll */}
-        {activeSection !== "notifications" && (
+        {currentActiveSection !== "notifications" && (
         <div style={{ flex: 1, padding: "30px", overflow: "auto", paddingTop: "80px" }}>
           {/* Affichage des détails du ticket en pleine page */}
           {showTicketDetailsPage && ticketDetails ? (
@@ -3698,7 +3743,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             </div>
           ) : (
           <>
-          {activeSection === "dashboard" && (
+          {currentActiveSection === "dashboard" && (
           <>
               <div style={{ marginTop: "40px", marginBottom: "24px" }}>
                 <div style={{ fontSize: "24px", fontWeight: "600", color: "#333", marginBottom: "4px" }}>
@@ -5133,7 +5178,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             </>
           )}
 
-          {activeSection === "tickets" && (
+          {currentActiveSection === "tickets" && (
             <>
               <h2 style={{ marginBottom: "24px", fontSize: "28px", fontWeight: "600", color: "#333" }}>Tous les tickets</h2>
               
@@ -6351,7 +6396,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         </div>
       )}
 
-          {activeSection === "technicians" && (
+          {currentActiveSection === "technicians" && (
             <div style={{ padding: "24px" }}>
               <div style={{
                 background: "hsl(0, 0%, 100%)",
@@ -6585,7 +6630,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
             </div>
           )}
 
-          {activeSection === "reports" && (roleName === "DSI" || roleName === "Admin") && (
+          {currentActiveSection === "reports" && (roleName === "DSI" || roleName === "Admin" || roleName === "Adjoint DSI") && (
             <>
               <h2 style={{ marginBottom: "24px", fontSize: "28px", fontWeight: "600", color: "#333" }}>Rapports</h2>
               
