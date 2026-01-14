@@ -5477,6 +5477,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               <div style={{ 
                 display: "flex", 
                 gap: "16px", 
+                marginTop: "24px",
                 marginBottom: "24px", 
                 flexWrap: "wrap"
               }}>
