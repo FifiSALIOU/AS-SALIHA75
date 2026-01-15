@@ -4014,62 +4014,6 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           </div>
       )}
 
-      {selectedTicket && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: "white",
-            padding: "24px",
-            borderRadius: "8px",
-            maxWidth: "500px",
-            width: "90%"
-          }}>
-            <h3>Ajouter un commentaire technique</h3>
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Entrez votre commentaire technique..."
-              style={{
-                width: "100%",
-                minHeight: "100px",
-                padding: "8px",
-                marginTop: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "4px"
-              }}
-            />
-            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <button
-                onClick={() => handleAddComment(selectedTicket)}
-                disabled={loading || !commentText.trim()}
-                style={{ flex: 1, padding: "10px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-              >
-                Ajouter
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTicket(null);
-                  setCommentText("");
-                }}
-                style={{ flex: 1, padding: "10px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {requestInfoTicket && (
         <div style={{
           position: "fixed",
@@ -4870,6 +4814,64 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         </div>
       )}
       </div>
+
+      {/* Modal pour ajouter un commentaire technique */}
+      {selectedTicket && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10000,
+          pointerEvents: "auto"
+        }}>
+          <div style={{
+            background: "white",
+            padding: "24px",
+            borderRadius: "8px",
+            maxWidth: "500px",
+            width: "90%"
+          }}>
+            <h3>Ajouter un commentaire technique</h3>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Entrez votre commentaire technique..."
+              style={{
+                width: "100%",
+                minHeight: "100px",
+                padding: "8px",
+                marginTop: "12px",
+                border: "1px solid #ddd",
+                borderRadius: "4px"
+              }}
+            />
+            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+              <button
+                onClick={() => handleAddComment(selectedTicket)}
+                disabled={loading || !commentText.trim()}
+                style={{ flex: 1, padding: "10px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+              >
+                Ajouter
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedTicket(null);
+                  setCommentText("");
+                }}
+                style={{ flex: 1, padding: "10px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
