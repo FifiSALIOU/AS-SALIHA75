@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Clock, CheckCircle, LayoutDashboard, PlusCircle, Ticket, ChevronLeft, ChevronRight, Bell, Wrench, Monitor, Search, Send, Info, CheckCircle2, AlertTriangle, XCircle, Check, Pencil, Trash2 } from "lucide-react";
+import { Clock, CheckCircle, LayoutDashboard, PlusCircle, Ticket, ChevronLeft, ChevronRight, Bell, Wrench, Monitor, Search, Send, Info, CheckCircle2, AlertTriangle, XCircle, Check, Pencil, Trash2, RefreshCcw } from "lucide-react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 
 interface UserDashboardProps {
@@ -1763,12 +1763,15 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                         style={{
                           padding: "10px 20px",
                           backgroundColor: "#e5e7eb",
-                          color: "white",
+                          color: "#dc3545",
                           border: "none",
                           borderRadius: "6px",
                           cursor: "pointer",
                           fontSize: "14px",
-                          fontWeight: "500"
+                          fontWeight: "500",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px"
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = "#d1d5db";
@@ -1777,6 +1780,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                           e.currentTarget.style.backgroundColor = "#e5e7eb";
                         }}
                       >
+                        <RefreshCcw size={16} color="#dc3545" />
                         Relancer
                       </button>
                     </>
