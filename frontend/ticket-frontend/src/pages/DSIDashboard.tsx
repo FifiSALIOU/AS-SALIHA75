@@ -278,6 +278,17 @@ function DSIDashboard({ token }: DSIDashboardProps) {
       return "Résolu par technicien";
     }
     
+    // Cas spécifique: validation et clôture par l'utilisateur (resolu → cloture avec "Validation utilisateur: Validé")
+    if ((oldStatus.includes("resolu") || oldStatus.includes("résolu")) &&
+        (newStatus.includes("cloture") || newStatus.includes("clôture")) &&
+        (reason.includes("validation utilisateur: validé") || reason.includes("validation utilisateur: validé"))) {
+      // Afficher "Validé par [nom de l'utilisateur]" si disponible
+      if (entry.user && entry.user.full_name) {
+        return `Validé par ${entry.user.full_name}`;
+      }
+      return "Validé par utilisateur";
+    }
+    
     // Pour le DSI, on affiche toujours le format "ancien → nouveau"
     return `${entry.old_status} → ${entry.new_status}`;
   };
