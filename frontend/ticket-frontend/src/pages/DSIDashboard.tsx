@@ -309,6 +309,12 @@ function DSIDashboard({ token }: DSIDashboardProps) {
       return "Ticket relancé";
     }
     
+    // Cas spécifique: reprise du ticket après relance (rejete → en_cours)
+    if ((oldStatus.includes("rejete") || oldStatus.includes("rejeté")) &&
+        (newStatus.includes("en_cours") || newStatus.includes("en cours"))) {
+      return "Ticket repris en charge par le technicien";
+    }
+    
     // Cas spécifique: technicien résout le ticket (en_cours → resolu)
     if ((oldStatus.includes("en_cours") || oldStatus.includes("en cours")) &&
         (newStatus.includes("resolu") || newStatus.includes("résolu"))) {
