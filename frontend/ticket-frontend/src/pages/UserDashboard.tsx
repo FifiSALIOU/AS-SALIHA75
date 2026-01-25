@@ -218,6 +218,23 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
       // Cas spécifique: en_attente_analyse → en_attente_analyse
       if ((oldStatus.includes("en_attente_analyse") || oldStatus.includes("en attente analyse")) && 
           (newStatus.includes("en_attente_analyse") || newStatus.includes("en attente analyse"))) {
+        // Vérifier si c'est une délégation à l'Adjoint DSI
+        const reason = (entry.reason || "").toLowerCase();
+        const isDelegation = reason.includes("délégation") || reason.includes("délégu") || reason.includes("delegat");
+        
+        if (isDelegation) {
+          // Essayer d'extraire le nom de l'Adjoint depuis le reason
+          // Format possible: "Délégation au Adjoint DSI" ou "Délégation au [Nom]"
+          const reasonUpper = entry.reason || "";
+          // Chercher un nom après "au" ou "à" (format: "Délégation au [Nom]")
+          const match = reasonUpper.match(/(?:au|à)\s+(?:Adjoint\s+DSI\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+          if (match && match[1] && match[1] !== "Adjoint" && match[1] !== "DSI") {
+            return `Ticket Délégué à ${match[1]}`;
+          }
+          // Si pas de nom trouvé, utiliser "Adjoint DSI" par défaut
+          return "Ticket Délégué à Adjoint DSI";
+        }
+        
         return "Ticket en attente d'assignation";
       }
     }
