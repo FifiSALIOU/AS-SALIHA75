@@ -10708,7 +10708,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                  <td style={{ padding: "12px 16px", fontSize: "14px", color: fg }}>{user.agency || "—"}</td>
                                  <td style={{ padding: "12px 16px" }}>
                                    {isActive ? (
-                                     <span style={{ background: greenActive, color: "white", borderRadius: "9999px", padding: "4px 12px", fontSize: "13px" }}>
+                                     <span style={{ background: "rgba(47, 158, 68, 0.1)", color: "#2F9E44", borderRadius: "9999px", padding: "4px 12px", fontSize: "13px" }}>
                                        Actif
                                      </span>
                                    ) : (
