@@ -10638,7 +10638,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                            <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: `1px solid ${borderColor}`, fontWeight: 500, fontSize: "14px", color: mutedFg }}>Rôle</th>
                            <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: `1px solid ${borderColor}`, fontWeight: 500, fontSize: "14px", color: mutedFg }}>Département</th>
                            <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: `1px solid ${borderColor}`, fontWeight: 500, fontSize: "14px", color: mutedFg }}>Statut</th>
-                           <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: `1px solid ${borderColor}`, fontWeight: 500, fontSize: "14px", color: mutedFg }}>Actions</th>
+                           <th style={{ padding: "12px 16px", textAlign: "right", borderBottom: `1px solid ${borderColor}`, fontWeight: 500, fontSize: "14px", color: mutedFg }}>Actions</th>
                          </tr>
                        </thead>
                        <tbody>
@@ -10717,8 +10717,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                      </span>
                                    )}
                                  </td>
-                                 <td style={{ padding: "12px 16px" }}>
-                                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                 <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                                   <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
                                      <button
                                        type="button"
                                        onClick={() => handleEditUser(user)}
