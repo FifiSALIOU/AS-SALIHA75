@@ -6419,6 +6419,525 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         </div>
       </div>
 
+      {/* Graphiques de la section Statistiques pour l'administrateur */}
+      {userRole === "Admin" && (
+        <>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "32px" }}>
+          {/* Graphique 1: Tickets cette semaine */}
+          <div style={{ 
+            background: "white", 
+            borderRadius: "8px", 
+            border: "1px solid rgba(229, 231, 235, 0.5)", 
+            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", 
+            display: "flex", 
+            flexDirection: "column" 
+          }}>
+            {/* CardHeader */}
+            <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#333", margin: 0 }}>
+                Tickets cette semaine
+              </h3>
+            </div>
+            {/* CardContent */}
+            <div style={{ padding: "24px", paddingTop: "0", flex: 1 }}>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart
+                  data={prepareWeeklyTicketsData()}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                  barCategoryGap="20%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis 
+                    dataKey="jour" 
+                    stroke="#E5E7EB"
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    style={{ fontSize: "12px" }}
+                  />
+                  <YAxis 
+                    stroke="#E5E7EB"
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    style={{ fontSize: "12px" }}
+                    domain={[0, 16]}
+                    ticks={[0, 4, 8, 12, 16]}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "white", 
+                      border: "1px solid #e5e7eb", 
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                    }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="rect" />
+                  <Bar 
+                    dataKey="Créés" 
+                    fill="#FF9500"
+                    radius={[4, 4, 0, 0]}
+                    barSize={30}
+                  />
+                  <Bar 
+                    dataKey="Résolus" 
+                    fill="#22C55E"
+                    radius={[4, 4, 0, 0]}
+                    barSize={30}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Graphique 2: Évolution mensuelle par type */}
+          <div style={{ 
+            background: "white", 
+            borderRadius: "8px", 
+            border: "1px solid rgba(229, 231, 235, 0.5)", 
+            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", 
+            display: "flex", 
+            flexDirection: "column" 
+          }}>
+            {/* CardHeader */}
+            <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#333", margin: 0 }}>
+                Évolution mensuelle par type
+              </h3>
+            </div>
+            {/* CardContent */}
+            <div style={{ padding: "24px", paddingTop: "0", flex: 1 }}>
+              <ResponsiveContainer width="100%" height={320}>
+                <AreaChart
+                  data={prepareMonthlyEvolutionData()}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                >
+                  <defs>
+                    <linearGradient id="colorMaterielDashboard" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#FF9500" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#FF9500" stopOpacity={0.05}/>
+                    </linearGradient>
+                    <linearGradient id="colorApplicatifDashboard" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#475569" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#475569" stopOpacity={0.05}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis 
+                    dataKey="mois" 
+                    stroke="#E5E7EB"
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    style={{ fontSize: "12px" }}
+                    angle={-45}
+                    textAnchor="end"
+                  />
+                  <YAxis 
+                    stroke="#E5E7EB"
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                    style={{ fontSize: "12px" }}
+                    domain={[0, 80]}
+                    ticks={[0, 20, 40, 60, 80]}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "white", 
+                      border: "1px solid #e5e7eb", 
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                    }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="line" />
+                  <Area 
+                    type="monotone" 
+                    dataKey="Matériel" 
+                    stroke="#FF9500" 
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorMaterielDashboard)" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="Applicatif" 
+                    stroke="#475569" 
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorApplicatifDashboard)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Deuxième ligne de graphiques - Donut charts */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "24px" }}>
+          {/* Graphique 3: Répartition par priorité */}
+          <div style={{ background: "white", padding: "24px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+            <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+              Répartition par priorité
+            </h3>
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={preparePriorityData()}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={90}
+                  paddingAngle={3}
+                  dataKey="value"
+                  stroke="#ffffff"
+                  strokeWidth={2}
+                  label={CustomLabel}
+                  labelLine={false}
+                >
+                  {preparePriorityData().map((entry, index) => {
+                    const colors = {
+                      "Critique": "#dc2626",
+                      "Haute": "#FF9500",
+                      "Moyenne": "#EAB308",
+                      "Basse": "#22C55E"
+                    };
+                    return (
+                      <Cell key={`cell-priority-dashboard-${index}`} fill={colors[entry.name as keyof typeof colors]} />
+                    );
+                  })}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "white", 
+                    border: "1px solid #e5e7eb", 
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                  }}
+                  formatter={(value: number, name: string, props: any) => {
+                    return [`${value} (${props.payload.percentage}%)`, name];
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Graphique 4: Répartition par statut */}
+          <div style={{ background: "white", padding: "24px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+            <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+              Répartition par statut
+            </h3>
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={prepareStatusData()}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={90}
+                  paddingAngle={3}
+                  dataKey="value"
+                  stroke="#ffffff"
+                  strokeWidth={2}
+                  label={CustomLabel}
+                  labelLine={false}
+                >
+                  {prepareStatusData().map((entry, index) => {
+                    const colors = {
+                      "En cours": "#FF9500",
+                      "En attente d'assignation": "#3B82F6",
+                      "Relancé": "#EF4444",
+                      "Résolu": "#22C55E",
+                      "Délégué": "#8B5CF6"
+                    };
+                    return (
+                      <Cell key={`cell-status-dashboard-${index}`} fill={colors[entry.name as keyof typeof colors]} />
+                    );
+                  })}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "white", 
+                    border: "1px solid #e5e7eb", 
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                  }}
+                  formatter={(value: number, name: string, props: any) => {
+                    return [`${value} (${props.payload.percentage}%)`, name];
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Troisième ligne de graphiques - Analyse par agence + Performance des techniciens */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "24px", marginTop: "24px" }}>
+          {/* Analyse par agence */}
+          <div style={{ 
+            background: "white", 
+            borderRadius: "8px", 
+            border: "1px solid rgba(229, 231, 235, 0.5)", 
+            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", 
+            display: "flex", 
+            flexDirection: "column" 
+          }}>
+            {/* CardHeader */}
+            <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#333", margin: 0 }}>
+                Analyse par agence
+              </h3>
+            </div>
+            {/* CardContent */}
+            <div style={{ padding: "24px", paddingTop: "0", flex: 1 }}>
+              {(() => {
+                const agencyData = prepareAgencyAnalysisData();
+                return agencyData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart 
+                      data={agencyData} 
+                      layout="vertical"
+                      margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+                      barCategoryGap="20%"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 60]}
+                        ticks={[0, 15, 30, 45, 60]}
+                        stroke="#6B7280" 
+                        style={{ fontSize: "12px" }}
+                      />
+                      <YAxis 
+                        dataKey="agence" 
+                        type="category" 
+                        stroke="#374151" 
+                        style={{ fontSize: "12px" }} 
+                        width={90}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "white",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                        }}
+                      />
+                      <Legend 
+                        wrapperStyle={{ marginTop: "20px" }}
+                        iconType="rect"
+                      />
+                      <Bar 
+                        dataKey="Total" 
+                        fill="#1A202C"
+                        radius={[0, 4, 4, 0]}
+                        barSize={20}
+                      />
+                      <Bar 
+                        dataKey="Résolus" 
+                        fill="#22C55E"
+                        radius={[0, 4, 4, 0]}
+                        barSize={20}
+                      />
+                      <Bar 
+                        dataKey="En attente" 
+                        fill="#FF9500"
+                        radius={[0, 4, 4, 0]}
+                        barSize={20}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
+                    Aucune donnée à afficher
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Performance des techniciens */}
+          <div style={{ 
+            background: "white", 
+            borderRadius: "8px", 
+            border: "1px solid rgba(229, 231, 235, 0.5)", 
+            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", 
+            display: "flex", 
+            flexDirection: "column",
+            padding: "24px"
+          }}>
+            {/* CardHeader */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "24px" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#333", margin: 0 }}>
+                Performance des techniciens
+              </h3>
+            </div>
+            
+            {/* Graphique en barres verticales */}
+            <div style={{ marginBottom: "24px" }}>
+              {(() => {
+                const techData = prepareTechnicianPerformanceData();
+                return techData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart 
+                      data={techData} 
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                      <XAxis 
+                        dataKey="technicien" 
+                        stroke="#6B7280" 
+                        style={{ fontSize: "12px" }}
+                      />
+                      <YAxis 
+                        domain={[0, 60]}
+                        ticks={[0, 15, 30, 45, 60]}
+                        stroke="#6B7280" 
+                        style={{ fontSize: "12px" }}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "white",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                        }}
+                        content={({ active, payload, label }: any) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div style={{
+                                backgroundColor: "white",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "8px",
+                                padding: "8px 12px",
+                                boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                              }}>
+                                <div style={{ color: "#111827", marginBottom: "4px" }}>
+                                  {label}
+                                </div>
+                                <div style={{ color: "#FF9500" }}>
+                                  Résolus : {payload[0].value}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar 
+                        dataKey="performance" 
+                        fill="#FF9500"
+                        stroke="#FF9500"
+                        radius={[4, 4, 0, 0]}
+                        barSize={40}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
+                    Aucune donnée à afficher
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Liste détaillée des techniciens */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {(() => {
+                const techData = prepareTechnicianPerformanceData();
+                return techData.map((tech, index) => {
+                  // Identifier Seydou Wane et Backary DRAME pour appliquer des styles spécifiques
+                  const isSeydouWane = tech.technicien.toLowerCase().includes("seydou") && tech.technicien.toLowerCase().includes("wane");
+                  const isBackaryDrame = tech.technicien.toLowerCase().includes("backary") && tech.technicien.toLowerCase().includes("drame");
+                  const isSpecialTechnician = isSeydouWane || isBackaryDrame;
+                  
+                  return (
+                  <div 
+                    key={`tech-dashboard-${tech.technicien}`}
+                    style={{ 
+                      background: isSpecialTechnician ? "#F5F5F5" : "#FFFFFF", 
+                      borderRadius: "12px", 
+                      border: "1px solid #F2F2F2", 
+                      padding: isSpecialTechnician ? "10px 14px" : "16px 20px", 
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "20px",
+                      minHeight: isSpecialTechnician ? "44px" : "56px",
+                      fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+                    }}
+                  >
+                    {/* Badge de rang */}
+                    <div 
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        backgroundColor: index === 0 
+                          ? "#F5EDD4" // Rang 1 : Couleur exacte demandée
+                          : "#E5E5E5", // Autres rangs : Gris clair
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: index === 0 
+                          ? "#C4A941" // Rang 1 : Couleur exacte demandée
+                          : "#262626", // Autres rangs : texte foncé
+                        flexShrink: 0,
+                        boxShadow: "none",
+                        border: "none"
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+
+                    {/* Nom du technicien */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: isSpecialTechnician ? "12px" : "14px", fontWeight: 600, color: "#262626" }}>
+                        {tech.technicien}
+                      </div>
+                    </div>
+
+                    {/* Temps moyen avec icône */}
+                    <div 
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        fontSize: isSpecialTechnician ? "12px" : "14px",
+                        fontWeight: 400,
+                        color: isSpecialTechnician ? "#000000" : "#808080",
+                        flexShrink: 0
+                      }}
+                    >
+                      <Clock className="h-3 w-3" style={{ width: isSpecialTechnician ? "10px" : "12px", height: isSpecialTechnician ? "10px" : "12px", color: isSpecialTechnician ? "#000000" : "#808080" }} />
+                      <span>{tech.avgTimeHours > 0 ? `${tech.avgTimeHours.toFixed(1)}h moy.` : "N/A"}</span>
+                    </div>
+
+                    {/* Badge de performance */}
+                    <div 
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        backgroundColor: "#D4F5E0",
+                        color: "#1B8A3E",
+                        padding: "6px 12px",
+                        borderRadius: "14px",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        minWidth: "60px",
+                        height: "28px",
+                        justifyContent: "center",
+                        flexShrink: 0
+                      }}
+                    >
+                      <TrendingUp className="h-4 w-4" style={{ width: "16px", height: "16px", color: "#1B8A3E" }} />
+                      <span>{tech.performancePercent}%</span>
+                    </div>
+                  </div>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        </div>
+        </>
+      )}
+
       {/* Section Tickets Récents pour DSI */}
       {userRole === "DSI" && (
         <>
@@ -6837,7 +7356,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
       )}
 
       {/* Vue d'ensemble globale - Graphiques pour l'administrateur */}
-      {userRole === "Admin" && (
+      {/* Section masquée selon demande utilisateur */}
+      {false && userRole === "Admin" && (
       <div style={{ marginTop: "32px" }}>
         <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#111827", marginBottom: "4px" }}>
           Vue d'ensemble de l'application
