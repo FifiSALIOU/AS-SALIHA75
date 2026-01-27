@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
-import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown } from "lucide-react";
+import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX } from "lucide-react";
 import React from "react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -969,6 +969,37 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     } catch (err) {
       console.error("Erreur lors de la réinitialisation:", err);
       alert("Erreur lors de la réinitialisation du mot de passe");
+    }
+  };
+
+  const handleToggleUserActif = async (user: any) => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/users/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ actif: !user.actif })
+      });
+
+      if (res.ok) {
+        const usersRes = await fetch("http://localhost:8000/users/", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          setAllUsers(usersData || []);
+        }
+      } else {
+        const error = await res.json();
+        alert(`Erreur: ${error.detail || "Impossible de modifier le statut"}`);
+      }
+    } catch (err) {
+      console.error("Erreur lors du changement de statut:", err);
+      alert("Erreur lors du changement de statut");
     }
   };
 
@@ -10719,6 +10750,21 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                  </td>
                                  <td style={{ padding: "12px 16px", textAlign: "right" }}>
                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+                                     <button
+                                       type="button"
+                                       onClick={() => handleToggleUserActif(user)}
+                                       title={isActive ? "Désactiver" : "Activer"}
+                                       style={{
+                                         padding: "8px",
+                                         background: "none",
+                                         border: "none",
+                                         borderRadius: "6px",
+                                         cursor: "pointer",
+                                         color: mutedFg
+                                       }}
+                                     >
+                                       {isActive ? <UserCheck size={18} /> : <UserX size={18} />}
+                                     </button>
                                      <button
                                        type="button"
                                        onClick={() => handleEditUser(user)}
