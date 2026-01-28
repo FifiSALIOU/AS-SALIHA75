@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
-import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX } from "lucide-react";
+import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX, UserCog } from "lucide-react";
 import React from "react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -424,6 +424,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     if (path === "/dashboard/admin/maintenance" || path === "/dashboard/dsi/maintenance") return "maintenance";
     if (path === "/dashboard/admin/reports" || path === "/dashboard/admin/statistiques" || path === "/dashboard/dsi/reports") return "reports";
     if (path === "/dashboard/admin/users" || path === "/dashboard/dsi/users") return "users";
+    if (path === "/dashboard/admin/roles" || path === "/dashboard/dsi/roles") return "roles";
     if (path === "/dashboard/admin/technicians" || path === "/dashboard/dsi/technicians") return "technicians";
     if (path === "/dashboard/admin/actifs" || path === "/dashboard/dsi/actifs") return "actifs";
     if (path === "/dashboard/admin/tickets" || path === "/dashboard/dsi/tickets") return "tickets";
@@ -5301,6 +5302,27 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               </svg>
             </div>
             <div style={{ flex: 1 }}>Utilisateurs</div>
+          </div>
+        )}
+        {userRole === "Admin" && (
+          <div 
+            onClick={() => navigate(`${getRoutePrefix()}/roles`)}
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "12px", 
+              padding: "10px", 
+              cursor: "pointer",
+              color: "white",
+              borderRadius: "4px",
+              background: activeSection === "roles" ? "hsl(25, 95%, 53%)" : "transparent",
+              marginBottom: "8px"
+            }}
+          >
+            <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <UserCog size={20} color={activeSection === "roles" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2.5} />
+            </div>
+            <div style={{ flex: 1 }}>Rôles</div>
           </div>
         )}
         <div 

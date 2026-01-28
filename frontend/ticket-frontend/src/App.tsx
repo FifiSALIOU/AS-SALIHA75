@@ -190,6 +190,10 @@ function App() {
           element={token ? <DSIDashboard token={token} /> : <Navigate to="/" replace />}
         />
         <Route
+          path="/dashboard/admin/roles"
+          element={token ? <DSIDashboard token={token} /> : <Navigate to="/" replace />}
+        />
+        <Route
           path="/dashboard/admin/statistiques"
           element={token ? <DSIDashboard token={token} /> : <Navigate to="/" replace />}
         />
