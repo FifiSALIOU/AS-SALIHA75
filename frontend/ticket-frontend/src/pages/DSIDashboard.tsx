@@ -11549,7 +11549,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                       </div>
 
                       {/* Boutons d'action */}
-                      <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "8px" }}>
+                      <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", gap: "12px", marginTop: "24px" }}>
                         {/* Bouton Annuler: variant="outline" */}
                         <button
                           type="button"
