@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
-import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX, UserCog, Shield, Check } from "lucide-react";
+import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX, UserCog, Shield, Check, Layers } from "lucide-react";
 import React from "react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -427,6 +427,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     if (path === "/dashboard/admin/roles" || path === "/dashboard/dsi/roles") return "roles";
     if (path === "/dashboard/admin/technicians" || path === "/dashboard/dsi/technicians") return "technicians";
     if (path === "/dashboard/admin/actifs" || path === "/dashboard/dsi/actifs") return "actifs";
+    if (path === "/dashboard/admin/types") return "types";
     if (path === "/dashboard/admin/tickets" || path === "/dashboard/dsi/tickets") return "tickets";
     // Vérifier les sous-sections de paramètres en premier (ordre important)
     if (path === "/dashboard/admin/parametres/apparence") return "apparence";
@@ -5270,6 +5271,27 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               <Box size={18} color={activeSection === "actifs" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2} />
             </div>
             <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Actifs</div>
+          </div>
+        )}
+        {userRole === "Admin" && (
+          <div 
+            onClick={() => navigate(`${getRoutePrefix()}/types`)}
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "12px", 
+              padding: "10px", 
+              cursor: "pointer",
+              color: "white",
+              borderRadius: "4px",
+              background: activeSection === "types" ? "hsl(25, 95%, 53%)" : "transparent",
+              marginBottom: "8px"
+            }}
+          >
+            <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Layers size={18} color={activeSection === "types" ? "white" : "rgba(180, 180, 180, 0.7)"} strokeWidth={2} />
+            </div>
+            <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Types</div>
           </div>
         )}
         {userRole !== "Admin" && (
