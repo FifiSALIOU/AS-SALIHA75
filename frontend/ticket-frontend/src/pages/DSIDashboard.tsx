@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
-import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX, UserCog, Shield, Check, Layers, Monitor } from "lucide-react";
+import { Users, Clock3, TrendingUp, Award, UserCheck, Star, LayoutDashboard, ChevronLeft, ChevronRight, Bell, BarChart3, Search, Ticket, Wrench, CheckCircle2, AlertTriangle, Clock, Briefcase, UserPlus, CornerUpRight, Box, FileText, RefreshCcw, Plus, Pencil, Trash2, ChevronDown, UserX, UserCog, Shield, Check, Layers, Monitor, X } from "lucide-react";
 import React from "react";
 import helpdeskLogo from "../assets/helpdesk-logo.png";
 import jsPDF from "jspdf";
@@ -471,9 +471,6 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
   const [delegatedTicketsByMe, setDelegatedTicketsByMe] = useState<Set<string>>(new Set());
-  const [apiTicketTypes, setApiTicketTypes] = useState<Array<{ id: number; code: string; label: string; is_active: boolean }>>([]);
-  const [apiTicketTypesLoading, setApiTicketTypesLoading] = useState(false);
-  const [apiTicketTypesError, setApiTicketTypesError] = useState<string | null>(null);
   const [userRoleFilter, setUserRoleFilter] = useState<string>("all");
   const [userStatusFilter, setUserStatusFilter] = useState<string>("all");
   const [userAgencyFilter, setUserAgencyFilter] = useState<string>("all");
@@ -532,29 +529,17 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // États pour les types de tickets
+  // États pour les types de tickets (depuis la base de données)
   const [ticketTypes, setTicketTypes] = useState<Array<{
     id: number;
-    type: string;
-    description: string;
-    color: string;
-  }>>(() => {
-    const saved = localStorage.getItem("ticketTypes");
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    // Types par défaut
-    return [
-      { id: 1, type: "Matériel", description: "Problèmes matériels", color: "#dc3545" },
-      { id: 2, type: "Applicatif", description: "Problèmes logiciels", color: "#28a745" },
-      { id: 3, type: "Réseau", description: "Problèmes réseau", color: "#ffc107" },
-      { id: 4, type: "Accès", description: "Problèmes d'accès", color: "#9c27b0" },
-      { id: 5, type: "Autre", description: "Autres problèmes", color: "#6c757d" }
-    ];
-  });
+    code: string;
+    label: string;
+    is_active: boolean;
+  }>>([]);
   const [showAddTypeModal, setShowAddTypeModal] = useState(false);
   const [editingType, setEditingType] = useState<number | null>(null);
   const [newType, setNewType] = useState({ type: "", description: "", color: "#007bff" });
+  const [loadingTypes, setLoadingTypes] = useState(false);
   
   // États pour les priorités
   const [priorities, setPriorities] = useState<Array<{
@@ -1240,51 +1225,44 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   };
 
   // Fonctions pour les types de tickets
-  const handleAddType = () => {
-    if (!newType.type.trim() || !newType.description.trim()) {
-      alert("Veuillez remplir tous les champs");
+  const handleAddType = async () => {
+    if (!newType.type.trim()) {
+      alert("Veuillez remplir le nom du type");
       return;
     }
-    const newId = ticketTypes.length > 0 ? Math.max(...ticketTypes.map(t => t.id)) + 1 : 1;
-    const updatedTypes = [...ticketTypes, { ...newType, id: newId }];
-    setTicketTypes(updatedTypes);
-    localStorage.setItem("ticketTypes", JSON.stringify(updatedTypes));
+    // Note: L'API pour créer un type n'existe pas encore, donc on garde juste le comportement actuel
+    // mais on recharge les types depuis l'API après
     setNewType({ type: "", description: "", color: "#007bff" });
     setShowAddTypeModal(false);
-    alert("Type de ticket ajouté avec succès !");
+    alert("Fonctionnalité d'ajout de type à implémenter via l'API");
   };
 
   const handleEditType = (typeId: number) => {
     const type = ticketTypes.find(t => t.id === typeId);
     if (type) {
-      setNewType({ type: type.type, description: type.description, color: type.color });
+      setNewType({ type: type.label, description: "", color: "#007bff" });
       setEditingType(typeId);
       setShowAddTypeModal(true);
     }
   };
 
-  const handleUpdateType = () => {
-    if (!newType.type.trim() || !newType.description.trim()) {
-      alert("Veuillez remplir tous les champs");
+  const handleUpdateType = async () => {
+    if (!newType.type.trim()) {
+      alert("Veuillez remplir le nom du type");
       return;
     }
-    const updatedTypes = ticketTypes.map(t => 
-      t.id === editingType ? { ...t, ...newType } : t
-    );
-    setTicketTypes(updatedTypes);
-    localStorage.setItem("ticketTypes", JSON.stringify(updatedTypes));
+    // Note: L'API pour modifier un type n'existe pas encore, donc on garde juste le comportement actuel
+    // mais on recharge les types depuis l'API après
     setNewType({ type: "", description: "", color: "#007bff" });
     setEditingType(null);
     setShowAddTypeModal(false);
-    alert("Type de ticket modifié avec succès !");
+    alert("Fonctionnalité de modification de type à implémenter via l'API");
   };
 
-  const handleDeleteType = (typeId: number) => {
+  const handleDeleteType = async (typeId: number) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce type de ticket ?")) {
-      const updatedTypes = ticketTypes.filter(t => t.id !== typeId);
-      setTicketTypes(updatedTypes);
-      localStorage.setItem("ticketTypes", JSON.stringify(updatedTypes));
-      alert("Type de ticket supprimé avec succès !");
+      // Note: L'API pour supprimer un type n'existe pas encore
+      alert("Fonctionnalité de suppression de type à implémenter via l'API");
     }
   };
 
@@ -1563,25 +1541,32 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     }
   }, [activeSection]);
 
-  // Charger les types de tickets (table ticket_types) quand on affiche la section Types
+  // Charger les types de tickets depuis la base de données
   useEffect(() => {
-    if (location.pathname !== "/dashboard/admin/types" || !token) return;
-    setApiTicketTypesLoading(true);
-    setApiTicketTypesError(null);
-    fetch("http://localhost:8000/ticket-config/types", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("Erreur chargement des types"))))
-      .then((data: Array<{ id: number; code: string; label: string; is_active: boolean }>) => {
-        setApiTicketTypes(data || []);
-        setApiTicketTypesError(null);
-      })
-      .catch((e) => {
-        setApiTicketTypesError(e?.message || "Erreur");
-        setApiTicketTypes([]);
-      })
-      .finally(() => setApiTicketTypesLoading(false));
-  }, [location.pathname, token]);
+    if (activeSection === "types" && userRole === "Admin" && token) {
+      async function loadTicketTypes() {
+        setLoadingTypes(true);
+        try {
+          const res = await fetch("http://localhost:8000/ticket-config/types", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setTicketTypes(data);
+          } else {
+            console.error("Erreur lors du chargement des types:", res.statusText);
+          }
+        } catch (err) {
+          console.error("Erreur lors du chargement des types:", err);
+        } finally {
+          setLoadingTypes(false);
+        }
+      }
+      void loadTicketTypes();
+    }
+  }, [activeSection, userRole, token]);
 
   async function loadUnreadCount() {
     if (!token || token.trim() === "") {
@@ -5710,7 +5695,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               color: "#111827",
               fontFamily: "system-ui, -apple-system, sans-serif"
             }}>
-              {activeSection === "roles" ? "Gestion des rôles" : activeSection === "users" ? "Gestion des utilisateurs" : activeSection === "tickets" ? "Tickets" : activeSection === "technicians" ? "Équipe" : activeSection === "reports" ? "Statistiques générales" : activeSection === "types" ? "Types de tickets" : "Tableau de bord"}
+              {activeSection === "roles" ? "Gestion des rôles" : activeSection === "users" ? "Gestion des utilisateurs" : activeSection === "tickets" ? "Tickets" : activeSection === "technicians" ? "Équipe" : activeSection === "reports" ? "Statistiques générales" : "Tableau de bord"}
             </div>
             <div style={{ 
               fontSize: "13px", 
@@ -5718,7 +5703,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               color: "#6b7280",
               fontFamily: "system-ui, -apple-system, sans-serif"
             }}>
-              {activeSection === "roles" ? "Créez, modifiez et gérez les rôles et permissions" : activeSection === "users" ? "Créez, modifiez et gérez les comptes utilisateurs" : activeSection === "tickets" ? "Gérez tous vos tickets" : activeSection === "technicians" ? "Gestion des membres de l'équipe DSI et des techniciens" : activeSection === "reports" ? "Vue d'ensemble des tickets et de l'activité du support" : activeSection === "types" ? "Types de tickets configurés dans la base (Matériel, Applicatif, etc.)" : "Vue d'ensemble de votre activité"}
+              {activeSection === "roles" ? "Créez, modifiez et gérez les rôles et permissions" : activeSection === "users" ? "Créez, modifiez et gérez les comptes utilisateurs" : activeSection === "tickets" ? "Gérez tous vos tickets" : activeSection === "technicians" ? "Gestion des membres de l'équipe DSI et des techniciens" : activeSection === "reports" ? "Vue d'ensemble des tickets et de l'activité du support" : "Vue d'ensemble de votre activité"}
             </div>
           </div>
           
@@ -10641,190 +10626,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
              </>
            )}
 
-           {activeSection === "types" && (
-             <div style={{ marginTop: "24px" }}>
-               {/* En-tête Types de tickets : Layers + titre + bouton Nouveau type */}
-               <div style={{
-                 display: "flex",
-                 alignItems: "center",
-                 justifyContent: "space-between",
-                 flexWrap: "wrap",
-                 gap: "16px",
-                 marginBottom: "24px"
-               }}>
-                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                   <div style={{
-                     width: "40px",
-                     height: "40px",
-                     borderRadius: "8px",
-                     background: "rgba(249, 115, 22, 0.1)",
-                     display: "flex",
-                     alignItems: "center",
-                     justifyContent: "center"
-                   }}>
-                     <Layers size={24} color="hsl(25, 95%, 53%)" strokeWidth={2} />
-                   </div>
-                   <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#111827", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                     Types de tickets
-                   </h2>
-                 </div>
-                 <button
-                   type="button"
-                   style={{
-                     display: "inline-flex",
-                     alignItems: "center",
-                     gap: "8px",
-                     padding: "10px 20px",
-                     backgroundColor: "hsl(25, 95%, 53%)",
-                     color: "white",
-                     border: "none",
-                     borderRadius: "8px",
-                     cursor: "pointer",
-                     fontSize: "14px",
-                     fontWeight: 500,
-                     fontFamily: "system-ui, -apple-system, sans-serif",
-                     boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
-                   }}
-                 >
-                   <Plus size={18} />
-                   Nouveau type
-                 </button>
-               </div>
-
-               {apiTicketTypesLoading ? (
-                 <div style={{ padding: "48px", textAlign: "center", color: "#6b7280", fontSize: "15px" }}>
-                   Chargement des types…
-                 </div>
-               ) : apiTicketTypesError ? (
-                 <div style={{ padding: "48px", textAlign: "center", color: "#ef4444", fontSize: "15px" }}>
-                   {apiTicketTypesError}
-                 </div>
-               ) : (
-                 <div style={{
-                   display: "grid",
-                   gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-                   gap: "20px"
-                 }}>
-                   {apiTicketTypes.map((t) => {
-                     const isMateriel = String(t.code).toLowerCase() === "materiel";
-                     const isApplicatif = String(t.code).toLowerCase() === "applicatif";
-                     const desc = isMateriel
-                       ? "Problèmes liés aux équipements physiques (ordinateurs, imprimantes, etc.)"
-                       : isApplicatif
-                       ? "Problèmes liés aux logiciels et applications"
-                       : `Type de ticket : ${t.label}`;
-                     return (
-                       <div
-                         key={t.id}
-                         style={{
-                           background: "#ffffff",
-                           borderRadius: "12px",
-                           border: "1px solid #e5e7eb",
-                           padding: "20px",
-                           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-                           position: "relative"
-                         }}
-                       >
-                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
-                           <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
-                             <div style={{
-                               width: "48px",
-                               height: "48px",
-                               borderRadius: "50%",
-                               background: isMateriel ? "rgba(249, 115, 22, 0.1)" : "#f3f4f6",
-                               display: "flex",
-                               alignItems: "center",
-                               justifyContent: "center",
-                               flexShrink: 0
-                             }}>
-                               {isMateriel ? (
-                                 <Wrench size={24} color="hsl(25, 95%, 53%)" strokeWidth={2} />
-                               ) : (
-                                 <Monitor size={24} color={isApplicatif ? "#374151" : "hsl(25, 95%, 53%)"} strokeWidth={2} />
-                               )}
-                             </div>
-                             <div style={{ minWidth: 0 }}>
-                               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                                 <span style={{ fontSize: "16px", fontWeight: 600, color: "#111827", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                                   {t.label}
-                                 </span>
-                                 {t.is_active && (
-                                   <span style={{
-                                     fontSize: "12px",
-                                     fontWeight: 500,
-                                     color: "#22c55e",
-                                     background: "rgba(34, 197, 94, 0.1)",
-                                     padding: "2px 8px",
-                                     borderRadius: "9999px"
-                                   }}>
-                                     Actif
-                                   </span>
-                                 )}
-                               </div>
-                               <p style={{ margin: "6px 0 0 0", fontSize: "14px", color: "#6b7280", lineHeight: 1.4, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                                 {desc}
-                               </p>
-                             </div>
-                           </div>
-                           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                             <button
-                               type="button"
-                               aria-label="Modifier"
-                               style={{
-                                 width: "32px",
-                                 height: "32px",
-                                 display: "flex",
-                                 alignItems: "center",
-                                 justifyContent: "center",
-                                 background: "transparent",
-                                 border: "none",
-                                 borderRadius: "6px",
-                                 cursor: "pointer",
-                                 color: "#6b7280"
-                               }}
-                               onMouseEnter={(e) => { e.currentTarget.style.color = "#111827"; e.currentTarget.style.background = "#f3f4f6"; }}
-                               onMouseLeave={(e) => { e.currentTarget.style.color = "#6b7280"; e.currentTarget.style.background = "transparent"; }}
-                             >
-                               <Pencil size={20} strokeWidth={2} />
-                             </button>
-                             <button
-                               type="button"
-                               aria-label="Supprimer"
-                               style={{
-                                 width: "32px",
-                                 height: "32px",
-                                 display: "flex",
-                                 alignItems: "center",
-                                 justifyContent: "center",
-                                 background: "transparent",
-                                 border: "none",
-                                 borderRadius: "6px",
-                                 cursor: "pointer",
-                                 color: "#ef4444"
-                               }}
-                               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = "rgba(239, 68, 68, 0.8)"; }}
-                               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#ef4444"; }}
-                             >
-                               <Trash2 size={20} strokeWidth={2} />
-                             </button>
-                           </div>
-                         </div>
-                         <div style={{ marginTop: "12px", fontSize: "12px", color: "hsl(25, 95%, 53%)", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                           Code: {t.code}
-                         </div>
-                       </div>
-                     );
-                   })}
-                   {apiTicketTypes.length === 0 && !apiTicketTypesLoading && !apiTicketTypesError && (
-                     <div style={{ gridColumn: "1 / -1", padding: "48px", textAlign: "center", color: "#6b7280", fontSize: "15px" }}>
-                       Aucun type de ticket configuré.
-                     </div>
-                   )}
-                 </div>
-               )}
-             </div>
-           )}
-
            {activeSection === "users" && (() => {
              // Filtrer les utilisateurs
              let filteredUsers = allUsers;
@@ -11351,6 +11152,426 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               </div>
             );
           })()}
+
+          {activeSection === "types" && userRole === "Admin" && (
+            <div style={{ padding: "24px" }}>
+              {/* Header avec titre et bouton */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <Layers size={20} color="hsl(220, 15%, 45%)" />
+                  <h1 style={{ fontSize: "24px", fontWeight: 600, color: "hsl(220, 15%, 45%)", margin: 0 }}>
+                    Types de tickets
+                  </h1>
+                </div>
+                <button
+                  onClick={() => {
+                    setNewType({ type: "", description: "", color: "#007bff" });
+                    setEditingType(null);
+                    setShowAddTypeModal(true);
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "10px 20px",
+                    backgroundColor: "#FF6B00",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+                  }}
+                >
+                  <Plus size={18} />
+                  Nouveau type
+                </button>
+              </div>
+
+              {/* Grille de cartes */}
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))", 
+                gap: "20px" 
+              }}>
+                {loadingTypes ? (
+                  <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", color: "hsl(220, 15%, 45%)" }}>
+                    Chargement des types...
+                  </div>
+                ) : ticketTypes.length === 0 ? (
+                  <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", color: "hsl(220, 15%, 45%)" }}>
+                    Aucun type de ticket trouvé
+                  </div>
+                ) : (
+                  ticketTypes.map((ticketType) => {
+                    const isMateriel = ticketType.code === "materiel" || ticketType.label.toLowerCase().includes("matériel") || ticketType.label.toLowerCase().includes("materiel");
+                    const isApplicatif = ticketType.code === "applicatif" || ticketType.label.toLowerCase().includes("applicatif") || ticketType.label.toLowerCase().includes("logiciel");
+                    
+                    // Générer une description basée sur le label si pas de description dans l'API
+                    const description = isMateriel ? "Problèmes liés aux équipements physiques (ordinateurs, imprimantes, etc.)" :
+                                      isApplicatif ? "Problèmes liés aux logiciels et applications" :
+                                      `Problèmes liés à ${ticketType.label.toLowerCase()}`;
+                    
+                    return (
+                      <div
+                        key={ticketType.id}
+                        style={{
+                          background: "white",
+                          borderRadius: "8px",
+                          border: "1px solid hsl(220, 20%, 92%)",
+                          padding: "20px",
+                          display: "flex",
+                          gap: "16px",
+                          transition: "all 0.2s ease",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.08)"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.08)";
+                        }}
+                      >
+                        {/* Icône dans cercle coloré */}
+                        <div
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            background: isMateriel ? "rgba(255, 107, 0, 0.1)" : "hsl(220, 20%, 96%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0
+                          }}
+                        >
+                          {isMateriel ? (
+                            <Wrench size={24} color="#FF6B00" />
+                          ) : (
+                            <Monitor size={24} color={isApplicatif ? "#FF6B00" : "hsl(220, 15%, 45%)"} />
+                          )}
+                        </div>
+
+                        {/* Contenu */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {/* Titre et badge Actif */}
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
+                            <h3 style={{ 
+                              fontSize: "16px", 
+                              fontWeight: 600, 
+                              color: "#1E3A5F", 
+                              margin: 0 
+                            }}>
+                              {ticketType.label}
+                            </h3>
+                            {ticketType.is_active && (
+                              <span style={{
+                                padding: "4px 12px",
+                                borderRadius: "9999px",
+                                fontSize: "13px",
+                                fontWeight: 500,
+                                background: "rgba(47, 158, 68, 0.1)",
+                                color: "#2F9E44"
+                              }}>
+                                Actif
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Description */}
+                          <p style={{ 
+                            fontSize: "14px", 
+                            color: "hsl(220, 15%, 45%)", 
+                            margin: "0 0 8px 0",
+                            lineHeight: "1.5"
+                          }}>
+                            {description}
+                          </p>
+
+                          {/* Code */}
+                          <p style={{ 
+                            fontSize: "12px", 
+                            color: "#FF6B00", 
+                            margin: 0,
+                            fontFamily: "monospace"
+                          }}>
+                            Code: {ticketType.code}
+                          </p>
+                        </div>
+
+                      {/* Actions */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", flexShrink: 0 }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditType(ticketType.id);
+                          }}
+                          style={{
+                            padding: "8px",
+                            background: "transparent",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            color: "hsl(220, 15%, 45%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "hsl(220, 20%, 96%)";
+                            e.currentTarget.style.color = "#1E3A5F";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = "hsl(220, 15%, 45%)";
+                          }}
+                          title="Modifier"
+                        >
+                          <Pencil size={20} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteType(ticketType.id);
+                          }}
+                          style={{
+                            padding: "8px",
+                            background: "transparent",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            color: "#dc2626",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(220, 38, 38, 0.1)";
+                            e.currentTarget.style.color = "#dc2626";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = "#dc2626";
+                          }}
+                          title="Supprimer"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Modal Modifier le type */}
+              {showAddTypeModal && (
+                <div 
+                  onClick={() => {
+                    setShowAddTypeModal(false);
+                    setEditingType(null);
+                    setNewType({ type: "", description: "", color: "#007bff" });
+                  }}
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(0,0,0,0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000,
+                    padding: "20px"
+                  }}
+                >
+                  <div 
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      background: "white",
+                      borderRadius: "12px",
+                      width: "100%",
+                      maxWidth: "500px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+                      padding: "24px",
+                      position: "relative"
+                    }}
+                  >
+                    {/* Bouton fermer */}
+                    <button
+                      onClick={() => {
+                        setShowAddTypeModal(false);
+                        setEditingType(null);
+                        setNewType({ type: "", description: "", color: "#007bff" });
+                      }}
+                      style={{
+                        position: "absolute",
+                        top: "16px",
+                        right: "16px",
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "4px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "hsl(220, 15%, 45%)"
+                      }}
+                    >
+                      <X size={20} />
+                    </button>
+
+                    <h2 style={{ marginBottom: "24px", fontSize: "24px", fontWeight: "600", color: "#333" }}>
+                      {editingType ? "Modifier le type" : "Ajouter un type"}
+                    </h2>
+                    
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      if (editingType) {
+                        handleUpdateType();
+                      } else {
+                        handleAddType();
+                      }
+                    }}>
+                      <div style={{ marginBottom: "16px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "#333", fontWeight: "500" }}>
+                          Nom du type <span style={{ color: "#dc3545" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={newType.type}
+                          onChange={(e) => setNewType({ ...newType, type: e.target.value })}
+                          placeholder="Ex: Matériel"
+                          required
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px"
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: "16px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "#333", fontWeight: "500" }}>
+                          Code (identifiant technique)
+                        </label>
+                        <input
+                          type="text"
+                          value={editingType ? ticketTypes.find(t => t.id === editingType)?.code || "" : (newType.type ? newType.type.toLowerCase().replace(/\s+/g, "-") : "")}
+                          readOnly
+                          placeholder="Généré automatiquement"
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            fontFamily: "monospace",
+                            backgroundColor: "#f5f5f5",
+                            color: "#666"
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: "16px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "#333", fontWeight: "500" }}>
+                          Description
+                        </label>
+                        <textarea
+                          value={newType.description}
+                          onChange={(e) => setNewType({ ...newType, description: e.target.value })}
+                          placeholder="Ex: Problèmes liés aux équipements physiques (ordinateurs, imprimantes, etc.)"
+                          rows={4}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            resize: "vertical"
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <label style={{ color: "#333", fontWeight: "500" }}>
+                          Actif
+                        </label>
+                        <div
+                          style={{
+                            width: "44px",
+                            height: "24px",
+                            borderRadius: "12px",
+                            background: editingType ? (ticketTypes.find(t => t.id === editingType)?.is_active ? "#2F9E44" : "#ccc") : "#2F9E44",
+                            position: "relative",
+                            cursor: "not-allowed",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              borderRadius: "50%",
+                              background: "white",
+                              position: "absolute",
+                              top: "2px",
+                              right: editingType ? (ticketTypes.find(t => t.id === editingType)?.is_active ? "2px" : "22px") : "2px",
+                              transition: "all 0.2s"
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "24px" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddTypeModal(false);
+                            setEditingType(null);
+                            setNewType({ type: "", description: "", color: "#007bff" });
+                          }}
+                          style={{
+                            padding: "10px 20px",
+                            background: "white",
+                            color: "#333",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontWeight: "500"
+                          }}
+                        >
+                          Annuler
+                        </button>
+                        <button
+                          type="submit"
+                          style={{
+                            padding: "10px 20px",
+                            background: "#FF6B00",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontWeight: "500"
+                          }}
+                        >
+                          {editingType ? "Modifier" : "Ajouter"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {activeSection === "technicians" && userRole !== "Admin" && (
             <div style={{ padding: "24px" }}>
