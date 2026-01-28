@@ -11155,11 +11155,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
           {activeSection === "types" && userRole === "Admin" && (
             <div style={{ padding: "24px" }}>
-              {/* Header avec titre et bouton */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <Layers size={20} color="hsl(220, 15%, 45%)" />
-                </div>
+              {/* Header avec bouton */}
+              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "24px" }}>
                 <button
                   onClick={() => {
                     setNewType({ type: "", description: "", color: "#007bff" });
