@@ -1696,7 +1696,10 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
               fontWeight: "400",
               color: "#6b7280",
               fontFamily: "system-ui, -apple-system, sans-serif",
-              whiteSpace: activeSection === "dashboard" ? "nowrap" : undefined
+              whiteSpace: activeSection === "dashboard" ? "nowrap" : undefined,
+              paddingLeft: 0,
+              marginLeft: 0,
+              textAlign: "left"
             }}>
               {activeSection === "notifications" ? `${unreadCount} notification${unreadCount > 1 ? "s" : ""} non lue${unreadCount > 1 ? "s" : ""}` : activeSection === "tickets" ? "Gérez tous vos tickets" : "Vue d'ensemble de votre\u00A0activité"}
             </div>
@@ -3407,7 +3410,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             flexShrink: 0
           }}>
             <div style={{
-              padding: "28px 20px 20px 20px",
+              padding: "28px 20px 20px 0",
               borderBottom: "1px solid #e0e0e0",
               display: "flex",
               justifyContent: "space-between",
@@ -4613,7 +4616,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                 flexShrink: 0
               }}>
                 <div style={{
-                  padding: "28px 20px 20px 20px",
+                  padding: "28px 20px 20px 0",
                   borderBottom: "1px solid #e0e0e0",
                   display: "flex",
                   justifyContent: "space-between",
