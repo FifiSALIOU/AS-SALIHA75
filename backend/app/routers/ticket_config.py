@@ -12,6 +12,24 @@ from ..security import get_current_user
 router = APIRouter(prefix="/ticket-config", tags=["ticket-config"])
 
 
+@router.get("/priorities", response_model=List[schemas.PriorityConfig])
+def get_priorities(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """
+    Récupère la liste des priorités configurées dans la base (table priorities).
+    Les tickets continuent d'utiliser la colonne priority (enum) ; cette liste sert de référence (libellés, couleurs).
+    """
+    priorities = (
+        db.query(models.Priority)
+        .filter(models.Priority.is_active.is_(True))
+        .order_by(models.Priority.display_order.asc(), models.Priority.id.asc())
+        .all()
+    )
+    return priorities
+
+
 @router.get("/types", response_model=List[schemas.TicketTypeConfig])
 def get_ticket_types(
     db: Session = Depends(get_db),

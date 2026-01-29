@@ -92,6 +92,7 @@ class TicketAssign(BaseModel):
     technician_id: int
     reason: Optional[str] = None
     notes: Optional[str] = None  # Notes/instructions pour le technicien
+    priority: Optional[TicketPriority] = None  # Priorité définie par DSI à l'assignation
 
 class TicketDelegate(BaseModel):
     adjoint_id: int
@@ -161,6 +162,20 @@ class TicketCategoryCreate(BaseModel):
     ticket_type_id: int
     description: Optional[str] = None
     is_active: bool = True
+
+
+class PriorityConfig(BaseModel):
+    """Schéma de lecture pour une priorité (table priorities)."""
+    id: int
+    code: str
+    label: str
+    color_hex: Optional[str] = None
+    background_hex: Optional[str] = None
+    display_order: int = 0
+    is_active: bool = True
+
+    class Config:
+        from_attributes = True
 
 
 class CommentCreate(BaseModel):

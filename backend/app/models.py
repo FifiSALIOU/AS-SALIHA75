@@ -91,6 +91,7 @@ class Ticket(Base):
     description = Column(Text, nullable=False)
     type = Column(Enum(TicketType), nullable=False)
     priority = Column(Enum(TicketPriority), nullable=False, default=TicketPriority.MOYENNE)
+    priority_id = Column(Integer, ForeignKey("priorities.id"), nullable=True)  # Référence table priorities, synchronisé avec priority
     status = Column(Enum(TicketStatus), nullable=False, default=TicketStatus.EN_ATTENTE_ANALYSE)
     category = Column(String(100), nullable=True)  # Catégorie du ticket (ex: Réseau, Logiciel, Matériel, etc.)
 
@@ -112,6 +113,7 @@ class Ticket(Base):
 
     creator = relationship("User", foreign_keys=[creator_id], back_populates="created_tickets")
     technician = relationship("User", foreign_keys=[technician_id], back_populates="assigned_tickets")
+    priority_ref = relationship("Priority", foreign_keys=[priority_id])
 
     comments = relationship("Comment", back_populates="ticket", cascade="all, delete-orphan")
     history = relationship("TicketHistory", back_populates="ticket", cascade="all, delete-orphan")
@@ -183,6 +185,23 @@ class TicketCategory(Base):
     
     # Relation vers TicketTypeModel
     ticket_type = relationship("TicketTypeModel", backref="categories")
+
+
+class Priority(Base):
+    """
+    Table de configuration pour les priorités des tickets.
+    Les tickets continuent de stocker la priorité via la colonne priority (enum),
+    cette table permet de centraliser libellés et couleurs sans toucher aux données existantes.
+    """
+    __tablename__ = "priorities"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(50), unique=True, nullable=False)  # ex: "faible", "moyenne", "haute", "critique"
+    label = Column(String(100), nullable=False)
+    color_hex = Column(String(20), nullable=True)  # Couleur du texte (ex: #E53E3E)
+    background_hex = Column(String(80), nullable=True)  # Couleur de fond (ex: rgba(229, 62, 62, 0.1) ou #E5E7EB)
+    display_order = Column(Integer, default=0)  # Ordre d'affichage (1 = plus prioritaire)
+    is_active = Column(Boolean, default=True)
 
 
 class NotificationType(str, PyEnum):

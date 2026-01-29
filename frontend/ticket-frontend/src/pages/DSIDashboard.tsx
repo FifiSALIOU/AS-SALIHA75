@@ -184,11 +184,12 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   // Fonction pour obtenir le libellé d'une priorité
   function getPriorityLabel(priority: string): string {
     switch (priority) {
+      case "non_definie": return "Non définie";
       case "faible": return "Faible";
       case "moyenne": return "Moyenne";
       case "haute": return "Haute";
       case "critique": return "Critique";
-      default: return priority;
+      default: return priority ? (priority === "non_definie" ? "Non définie" : priority) : "Non définie";
     }
   }
 
@@ -384,6 +385,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [selectedTechnician, setSelectedTechnician] = useState<string>("");
   const [assignmentNotes, setAssignmentNotes] = useState<string>("");
+  const [assignmentPriority, setAssignmentPriority] = useState<string>("moyenne");
   const [reopenTicketId, setReopenTicketId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>("");
   const [loadingRejectionReason, setLoadingRejectionReason] = useState<boolean>(false);
@@ -2753,6 +2755,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
         },
         body: JSON.stringify({
           technician_id: selectedTechnician,
+          priority: assignmentPriority,
         }),
       });
 
@@ -2768,6 +2771,7 @@ function DSIDashboard({ token }: DSIDashboardProps) {
         }
         setSelectedTechnician("");
         setAssignmentNotes("");
+        setAssignmentPriority("moyenne");
         setShowAssignModal(false);
         setAssignTicketId(null);
         alert("Ticket assigné avec succès");
@@ -2887,9 +2891,11 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   }
 
   function handleAssignClick(ticketId: string) {
+    const ticket = allTickets.find(t => t.id === ticketId);
     setAssignTicketId(ticketId);
     setSelectedTechnician("");
     setAssignmentNotes("");
+    setAssignmentPriority(ticket?.priority && ["faible", "moyenne", "haute", "critique"].includes(ticket.priority) ? ticket.priority : "moyenne");
     setShowAssignModal(true);
   }
   function handleDelegateClick(ticketId: string) {
@@ -3218,9 +3224,9 @@ function DSIDashboard({ token }: DSIDashboardProps) {
   };
 
   const preparePriorityEvolutionData = () => {
-    const priorities = ['critique', 'haute', 'moyenne', 'faible'];
+    const priorities = ['critique', 'haute', 'moyenne', 'faible', 'non_definie'];
     return priorities.map(priority => ({
-      priorité: priority.charAt(0).toUpperCase() + priority.slice(1),
+      priorité: priority === 'non_definie' ? 'Non définie' : priority.charAt(0).toUpperCase() + priority.slice(1),
       nombre: allTickets.filter(t => t.priority === priority).length
     }));
   };
@@ -3363,13 +3369,15 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     const haute = allTickets.filter(t => t.priority === "haute").length;
     const moyenne = allTickets.filter(t => t.priority === "moyenne").length;
     const basse = allTickets.filter(t => t.priority === "basse" || t.priority === "faible").length;
+    const nonDefinie = allTickets.filter(t => t.priority === "non_definie").length;
     const total = allTickets.length;
     
     return [
       { name: "Critique", value: critique, percentage: total > 0 ? Math.round((critique / total) * 100) : 0 },
       { name: "Haute", value: haute, percentage: total > 0 ? Math.round((haute / total) * 100) : 0 },
       { name: "Moyenne", value: moyenne, percentage: total > 0 ? Math.round((moyenne / total) * 100) : 0 },
-      { name: "Basse", value: basse, percentage: total > 0 ? Math.round((basse / total) * 100) : 0 }
+      { name: "Basse", value: basse, percentage: total > 0 ? Math.round((basse / total) * 100) : 0 },
+      { name: "Non définie", value: nonDefinie, percentage: total > 0 ? Math.round((nonDefinie / total) * 100) : 0 }
     ];
   };
 
@@ -3440,7 +3448,8 @@ function DSIDashboard({ token }: DSIDashboardProps) {
     'Critique': '#E53E3E',
     'Haute': '#F59E0B',
     'Moyenne': '#0DADDB',
-    'Faible': '#6b7280'
+    'Faible': '#6b7280',
+    'Non définie': '#6b7280'
   };
 
   const prepareAgencyData = () => {
@@ -3958,10 +3967,10 @@ function DSIDashboard({ token }: DSIDashboardProps) {
           ["Priorité", "Nombre", "Pourcentage"]
         ];
         
-        ["critique", "haute", "moyenne", "faible"].forEach((priority) => {
+        ["critique", "haute", "moyenne", "faible", "non_definie"].forEach((priority) => {
           const count = allTickets.filter((t) => t.priority === priority).length;
           priorityData.push([
-            priority.charAt(0).toUpperCase() + priority.slice(1),
+            priority === "non_definie" ? "Non définie" : priority.charAt(0).toUpperCase() + priority.slice(1),
             count.toString(),
             allTickets.length > 0 ? ((count / allTickets.length) * 100).toFixed(1) + "%" : "0%"
           ]);
@@ -4663,10 +4672,10 @@ function DSIDashboard({ token }: DSIDashboardProps) {
         const priorityData = [
           ['Priorité', 'Nombre', 'Pourcentage']
         ];
-        ["critique", "haute", "moyenne", "faible"].forEach((priority) => {
+        ["critique", "haute", "moyenne", "faible", "non_definie"].forEach((priority) => {
           const count = allTickets.filter((t) => t.priority === priority).length;
           priorityData.push([
-            priority.charAt(0).toUpperCase() + priority.slice(1),
+            priority === "non_definie" ? "Non définie" : priority.charAt(0).toUpperCase() + priority.slice(1),
             count.toString(),
             allTickets.length > 0 ? ((count / allTickets.length) * 100).toFixed(1) + '%' : '0%'
           ]);
@@ -6194,8 +6203,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     borderRadius: "4px",
                     fontSize: "12px",
                     fontWeight: "500",
-                    background: ticketDetails.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : ticketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : ticketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : ticketDetails.priority === "faible" ? "#E5E7EB" : "#9e9e9e",
-                    color: ticketDetails.priority === "critique" ? "#E53E3E" : ticketDetails.priority === "haute" ? "#F59E0B" : ticketDetails.priority === "moyenne" ? "#0DADDB" : ticketDetails.priority === "faible" ? "#6B7280" : "white"
+                    background: ticketDetails.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : ticketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : ticketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : ticketDetails.priority === "faible" ? "#E5E7EB" : ticketDetails.priority === "non_definie" ? "#E5E7EB" : "#9e9e9e",
+                    color: ticketDetails.priority === "critique" ? "#E53E3E" : ticketDetails.priority === "haute" ? "#F59E0B" : ticketDetails.priority === "moyenne" ? "#0DADDB" : ticketDetails.priority === "faible" ? "#6B7280" : ticketDetails.priority === "non_definie" ? "#6B7280" : "white"
                   }}>
                     {getPriorityLabel(ticketDetails.priority)}
                   </span>
@@ -7501,7 +7510,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                 // Couleur de la barre selon la priorité
                 const borderColor = t.priority === "critique" ? "#E53E3E" : 
                                    t.priority === "haute" ? "#F59E0B" : 
-                                   t.priority === "faible" ? "rgba(107, 114, 128, 0.3)" : 
+                                   t.priority === "faible" || t.priority === "non_definie" ? "rgba(107, 114, 128, 0.3)" : 
                                    "#0DADDB";
 
                 // Déterminer le type de ticket basé sur la catégorie
@@ -7593,11 +7602,11 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           background: t.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : 
                                      t.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : 
                                      t.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : 
-                                     t.priority === "faible" ? "#E5E7EB" : "#e5e7eb",
+                                     t.priority === "faible" ? "#E5E7EB" : t.priority === "non_definie" ? "#E5E7EB" : "#e5e7eb",
                           color: t.priority === "critique" ? "#E53E3E" : 
                                  t.priority === "haute" ? "#F59E0B" : 
                                  t.priority === "moyenne" ? "#0DADDB" : 
-                                 t.priority === "faible" ? "#6B7280" : "#374151",
+                                 t.priority === "faible" ? "#6B7280" : t.priority === "non_definie" ? "#6B7280" : "#374151",
                           whiteSpace: "nowrap",
                         }}>
                           {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
@@ -7982,7 +7991,8 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                       'Critique': '#E53E3E',
                       'Haute': '#F59E0B',
                       'Moyenne': '#0DADDB',
-                      'Faible': '#6b7280'
+                      'Faible': '#6b7280',
+                      'Non définie': '#6b7280'
                     };
                     return <Cell key={`cell-priority-${index}`} fill={priorityColors[entry.priorité] || '#3b82f6'} />;
                   })}
@@ -8529,6 +8539,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     }}
                   >
                     <option value="all">Toutes les priorités</option>
+                    <option value="non_definie">Non définie</option>
                     <option value="critique">Critique</option>
                     <option value="haute">Haute</option>
                     <option value="moyenne">Moyenne</option>
@@ -8623,7 +8634,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                     // Couleur de la barre selon la priorité
                     const borderColor = t.priority === "critique" ? "#E53E3E" : 
                                        t.priority === "haute" ? "#F59E0B" : 
-                                       t.priority === "faible" ? "rgba(107, 114, 128, 0.3)" : 
+                                       t.priority === "faible" || t.priority === "non_definie" ? "rgba(107, 114, 128, 0.3)" : 
                                        "#0DADDB";
 
                     // Déterminer le type de ticket basé sur la catégorie
@@ -8715,11 +8726,11 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                               background: t.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : 
                                          t.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : 
                                          t.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : 
-                                         t.priority === "faible" ? "#E5E7EB" : "#e5e7eb",
+                                         t.priority === "faible" ? "#E5E7EB" : t.priority === "non_definie" ? "#E5E7EB" : "#e5e7eb",
                               color: t.priority === "critique" ? "#E53E3E" : 
                                      t.priority === "haute" ? "#F59E0B" : 
                                      t.priority === "moyenne" ? "#0DADDB" : 
-                                     t.priority === "faible" ? "#6B7280" : "#374151",
+                                     t.priority === "faible" ? "#6B7280" : t.priority === "non_definie" ? "#6B7280" : "#374151",
                               whiteSpace: "nowrap",
                             }}>
                               {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
@@ -10726,6 +10737,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           }}
                         >
                           <option value="all">Tous</option>
+                          <option value="non_definie">Non définie</option>
                           <option value="critique">Critique</option>
                           <option value="haute">Haute</option>
                           <option value="moyenne">Moyenne</option>
@@ -17501,6 +17513,44 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               </select>
             </div>
 
+            {/* Définir la priorité */}
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", color: "#333" }}>
+                Définir la priorité
+              </label>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    background:
+                      assignmentPriority === "critique" ? "#E53E3E" :
+                      assignmentPriority === "haute" ? "#F59E0B" :
+                      assignmentPriority === "moyenne" ? "#0DADDB" :
+                      "#6B7280"
+                  }}
+                />
+                <select
+                  value={assignmentPriority}
+                  onChange={(e) => setAssignmentPriority(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px"
+                  }}
+                >
+                  <option value="faible">Faible</option>
+                  <option value="moyenne">Moyenne</option>
+                  <option value="haute">Haute</option>
+                  <option value="critique">Critique</option>
+                </select>
+              </div>
+            </div>
+
             {/* Notes optionnelles */}
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", color: "#333" }}>
@@ -17530,6 +17580,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                   setAssignTicketId(null);
                   setSelectedTechnician("");
                   setAssignmentNotes("");
+                  setAssignmentPriority("moyenne");
                 }}
                 disabled={loading}
                 style={{

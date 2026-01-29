@@ -13,6 +13,15 @@ from ..email_service import email_service
 router = APIRouter()
 
 
+def _get_priority_id_from_enum(db: Session, priority_value) -> Optional[int]:
+    """Retourne l'id de la table priorities correspondant au code de l'enum (ex: TicketPriority.CRITIQUE → id de 'critique')."""
+    if priority_value is None:
+        return None
+    code = getattr(priority_value, "value", str(priority_value))
+    p = db.query(models.Priority).filter(models.Priority.code == code).first()
+    return p.id if p else None
+
+
 @router.post("/", response_model=schemas.TicketRead)
 def create_ticket(
     ticket_in: schemas.TicketCreate,
@@ -28,12 +37,14 @@ def create_ticket(
     if last_ticket and last_ticket.number:
         next_number = last_ticket.number + 1
     
+    priority_id = _get_priority_id_from_enum(db, ticket_in.priority)
     ticket = models.Ticket(
         number=next_number,  # Assigner le numéro généré
         title=ticket_in.title,
         description=ticket_in.description,
         type=ticket_in.type,
         priority=ticket_in.priority,
+        priority_id=priority_id,  # Synchronisé avec la table priorities
         category=ticket_in.category,  # Catégorie du ticket
         creator_id=current_user.id,
         user_agency=current_user.agency,  # Enregistrer l'agence de l'utilisateur créateur
@@ -314,6 +325,7 @@ def edit_ticket(
         ticket.type = ticket_in.type
     if ticket_in.priority is not None:
         ticket.priority = ticket_in.priority
+        ticket.priority_id = _get_priority_id_from_enum(db, ticket_in.priority)
     if ticket_in.category is not None:
         ticket.category = ticket_in.category
 
@@ -412,7 +424,10 @@ def assign_ticket(
     ticket.secretary_id = current_user.id
     ticket.status = models.TicketStatus.ASSIGNE_TECHNICIEN
     ticket.assigned_at = datetime.utcnow()
-    
+    if assign_data.priority is not None:
+        ticket.priority = assign_data.priority
+        ticket.priority_id = _get_priority_id_from_enum(db, assign_data.priority)
+
     # Créer une entrée d'historique avec notes/instructions
     history_reason = assign_data.reason or ""
     if assign_data.notes:
@@ -655,7 +670,8 @@ def escalate_ticket(
     elif ticket.priority == models.TicketPriority.HAUTE:
         ticket.priority = models.TicketPriority.CRITIQUE
     # Si déjà critique, on ne peut plus escalader
-    
+    ticket.priority_id = _get_priority_id_from_enum(db, ticket.priority)
+
     if ticket.priority == old_priority:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
