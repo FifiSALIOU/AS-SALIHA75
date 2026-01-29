@@ -10980,7 +10980,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
              ];
              return (
                <div style={{ padding: "24px" }}>
-                 <h2 style={{ fontSize: "20px", fontWeight: "600", color: "#111827", marginBottom: "20px" }}>Groupes</h2>
                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                    {groupsData.map((group) => {
                      const IconComponent = group.icon;
