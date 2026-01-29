@@ -10963,12 +10963,72 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
              </>
            )}
 
-           {activeSection === "groupes" && (
-             <div style={{ padding: "24px", background: "white", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-               <h2 style={{ fontSize: "20px", fontWeight: "600", color: "#111827", marginBottom: "8px" }}>Groupes</h2>
-               <p style={{ color: "#6b7280", fontSize: "14px" }}>Gestion des groupes.</p>
-             </div>
-           )}
+           {activeSection === "groupes" && (() => {
+             const groupsData = [
+               { id: "1", name: "Priorité Manager", description: "Responsables de la gestion et de la priorisation des tickets", icon: Shield, bgColor: "#f3e8ff", iconColor: "#9333ea", membersCount: 0 },
+               { id: "2", name: "Techniciens Maintenance", description: "Techniciens spécialisés dans les problèmes matériels", icon: Wrench, bgColor: "#ffedd5", iconColor: "#ea580c", membersCount: 0 },
+               { id: "3", name: "Techniciens Support Applicatif", description: "Techniciens spécialisés dans les problèmes logiciels", icon: Monitor, bgColor: "#dbeafe", iconColor: "#2563eb", membersCount: 0 },
+               { id: "4", name: "Utilisateurs", description: "Utilisateurs standards qui créent des tickets", icon: UserCheck, bgColor: "#dcfce7", iconColor: "#16a34a", membersCount: 0 },
+             ];
+             return (
+               <div style={{ padding: "24px" }}>
+                 <h2 style={{ fontSize: "20px", fontWeight: "600", color: "#111827", marginBottom: "20px" }}>Groupes</h2>
+                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                   {groupsData.map((group) => {
+                     const IconComponent = group.icon;
+                     const membersLabel = group.membersCount === 1 ? "1 membre" : `${group.membersCount} membre${group.membersCount > 1 ? "s" : ""}`;
+                     return (
+                       <div
+                         key={group.id}
+                         style={{
+                           border: "1px solid #e5e7eb",
+                           boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                           borderRadius: "8px",
+                           overflow: "hidden",
+                           background: "white",
+                         }}
+                       >
+                         <button
+                           type="button"
+                           style={{
+                             width: "100%",
+                             padding: "16px",
+                             display: "flex",
+                             alignItems: "center",
+                             justifyContent: "space-between",
+                             background: "transparent",
+                             border: "none",
+                             cursor: "pointer",
+                             borderRadius: "8px",
+                             textAlign: "left",
+                             transition: "background 0.2s",
+                           }}
+                           onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.02)"; }}
+                           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                         >
+                           <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1, minWidth: 0 }}>
+                             <div style={{ padding: "12px", background: group.bgColor, borderRadius: "12px", flexShrink: 0 }}>
+                               <IconComponent size={24} color={group.iconColor} strokeWidth={2} />
+                             </div>
+                             <div style={{ minWidth: 0 }}>
+                               <h3 style={{ fontSize: "18px", fontWeight: "600", color: "#111827", margin: 0, marginBottom: "4px" }}>{group.name}</h3>
+                               <p style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}>{group.description}</p>
+                             </div>
+                           </div>
+                           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+                             <span style={{ fontSize: "14px", padding: "4px 10px", borderRadius: "9999px", background: "#1E3A5F", color: "white", fontWeight: "500" }}>
+                               {membersLabel}
+                             </span>
+                             <ChevronRight size={20} color="#6b7280" />
+                           </div>
+                         </button>
+                       </div>
+                     );
+                   })}
+                 </div>
+               </div>
+             );
+           })()}
 
            {activeSection === "users" && (() => {
              // Filtrer les utilisateurs
