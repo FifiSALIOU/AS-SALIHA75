@@ -5538,7 +5538,12 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
         )}
         
         <div 
-          onClick={() => navigate(getRoutePrefix())}
+          onClick={() => {
+            setShowTicketDetailsPage(false);
+            setTicketDetails(null);
+            setTicketHistory([]);
+            navigate(getRoutePrefix());
+          }}
           style={{ 
             display: "flex", 
             alignItems: "center", 
