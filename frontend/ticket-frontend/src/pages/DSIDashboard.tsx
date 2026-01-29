@@ -11651,17 +11651,17 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                             type="button"
                             style={{
                               padding: "12px 16px",
-                              border: "1px solid hsl(25, 95%, 53%)",
+                              border: "1px solid #000",
                               borderRadius: "8px",
                               backgroundColor: "white",
-                              color: "hsl(25, 95%, 53%)",
+                              color: "#000",
                               cursor: "pointer",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center"
                             }}
                           >
-                            <Plus size={20} />
+                            <Plus size={20} color="#000" />
                           </button>
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
