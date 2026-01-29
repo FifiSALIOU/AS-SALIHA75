@@ -11443,23 +11443,25 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                                     {/* Header de catégorie */}
                                     <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
                                       <Tag size={20} color="hsl(220, 15%, 45%)" />
-                                      <span style={{ fontSize: "16px", fontWeight: 500, color: "hsl(var(--foreground, #111827))", fontFamily: "system-ui, -apple-system, sans-serif", flex: 1 }}>
-                                        {cat.name}
-                                      </span>
-                                      {cat.is_active && (
-                                        <span
-                                          style={{
-                                            padding: "4px 10px",
-                                            borderRadius: "9999px",
-                                            border: "1px solid hsl(220, 20%, 80%)",
-                                            color: "hsl(220, 15%, 45%)",
-                                            fontSize: "13px",
-                                            fontWeight: 500
-                                          }}
-                                        >
-                                          Actif
+                                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+                                        <span style={{ fontSize: "16px", fontWeight: 500, color: "hsl(var(--foreground, #111827))", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                                          {cat.name}
                                         </span>
-                                      )}
+                                        {cat.is_active && (
+                                          <span
+                                            style={{
+                                              padding: "4px 10px",
+                                              borderRadius: "9999px",
+                                              border: "1px solid hsl(220, 20%, 80%)",
+                                              color: "hsl(220, 15%, 45%)",
+                                              fontSize: "13px",
+                                              fontWeight: 500
+                                            }}
+                                          >
+                                            Actif
+                                          </span>
+                                        )}
+                                      </div>
                                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                                         <button
                                           type="button"
