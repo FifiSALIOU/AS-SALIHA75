@@ -10235,7 +10235,7 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
               <h3 style={{ marginBottom: "16px", color: "#f97316" }}>Assigner le ticket à un technicien</h3>
               <div style={{ marginBottom: "20px", padding: "12px", background: "#f8f9fa", borderRadius: "4px" }}>
                 <div style={{ marginBottom: "8px" }}>
-                  <strong>Ticket #{ticket.number}:</strong> {ticket.title}
+                  <strong>Ticket {formatTicketNumber(ticket.number)}:</strong> {ticket.title}
                 </div>
               </div>
               <div style={{ marginBottom: "16px" }}>
