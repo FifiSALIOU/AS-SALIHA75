@@ -6177,25 +6177,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                 marginBottom: "24px", 
                 flexWrap: "wrap"
               }}>
-                <div style={{ flex: 1, minWidth: "200px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500", color: "#666" }}>Filtrer par agence</label>
-                  <select
-                    value={agencyFilter}
-                    onChange={(e) => setAgencyFilter(e.target.value)}
-                    style={{ 
-                      width: "100%", 
-                      padding: "8px 12px", 
-                      border: "1px solid #ddd", 
-                      borderRadius: "4px",
-                      fontSize: "14px"
-                    }}
-                  >
-                    <option value="all">Toutes les agences</option>
-                    {allAgencies.map((agency) => (
-                      <option key={agency} value={agency || ""}>{agency}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               {/* Tickets Cards */}
