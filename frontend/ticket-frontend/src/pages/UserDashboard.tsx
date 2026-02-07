@@ -2251,6 +2251,9 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   width: "100%",
                   marginBottom: "8px"
                 }}>
+                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
+                    En attente
+                  </div>
                   <div style={{
                     width: "32px",
                     height: "32px",
@@ -2263,9 +2266,6 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                     position: "relative"
                   }}>
                     <Clock size={16} color="#ea580c" />
-                  </div>
-                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
-                    En attente
                   </div>
                 </div>
                 <span style={{ fontSize: "28px", fontWeight: "bold", color: "#1f2937", marginBottom: "4px", zIndex: 1, position: "relative" }}>
@@ -2322,6 +2322,9 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   width: "100%",
                   marginBottom: "8px"
                 }}>
+                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
+                    En traitement
+                  </div>
                   <div style={{
                     width: "32px",
                     height: "32px",
@@ -2332,9 +2335,6 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                     justifyContent: "center"
                   }}>
                     <Clock size={16} color="#0284c7" />
-                  </div>
-                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
-                    En traitement
                   </div>
                 </div>
                 <span style={{ fontSize: "28px", fontWeight: "bold", color: "#111827", marginBottom: "4px" }}>
@@ -2391,6 +2391,9 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                   width: "100%",
                   marginBottom: "8px"
                 }}>
+                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
+                    Ce mois-ci
+                  </div>
                   <div style={{
                     width: "32px",
                     height: "32px",
@@ -2401,9 +2404,6 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                     justifyContent: "center"
                   }}>
                     <CheckCircle size={16} color="#16a34a" />
-                  </div>
-                  <div style={{ color: "#6b7280", fontSize: "11px", fontWeight: "500" }}>
-                    Ce mois-ci
                   </div>
                 </div>
                 <span style={{ fontSize: "28px", fontWeight: "bold", color: "#1f2937", marginBottom: "4px" }}>
