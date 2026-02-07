@@ -4351,7 +4351,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
                           <textarea
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
-                            placeholder="Exemple: Le problème persiste toujours, la solution proposée ne fonctionne pas, j'ai besoin de plus d'informations..."
+                            placeholder=""
                             rows={4}
                             required
                             style={{
