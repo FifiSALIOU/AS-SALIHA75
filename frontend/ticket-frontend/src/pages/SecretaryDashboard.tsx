@@ -4278,12 +4278,6 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
 
                     <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
                       <div>
-                        <strong>Type :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#e3f2fd", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.type === "materiel" ? "Matériel" : "Applicatif"}
-                        </span>
-                      </div>
-                      <div>
                         <strong>Priorité :</strong>
                         <span style={{
                           marginLeft: "8px",
@@ -4294,23 +4288,35 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           background: selectedNotificationTicketDetails.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : "#9e9e9e",
                           color: selectedNotificationTicketDetails.priority === "critique" ? "#E53E3E" : selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : selectedNotificationTicketDetails.priority === "moyenne" ? "#0DADDB" : "white"
                         }}>
-                          {selectedNotificationTicketDetails.priority}
+                          {getPriorityLabel(selectedNotificationTicketDetails.priority)}
+                        </span>
+                      </div>
+                      <div>
+                        <strong>Type :</strong>
+                        <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
+                          {getTypeLabel(selectedNotificationTicketDetails.type)}
+                        </span>
+                      </div>
+                      <div>
+                        <strong>Catégorie :</strong>
+                        <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
+                          {selectedNotificationTicketDetails.category || "Non spécifiée"}
                         </span>
                       </div>
                       <div>
                         <strong>Statut :</strong>
-                        <span style={{ marginLeft: "8px", padding: "4px 8px", background: "#f3e5f5", borderRadius: "4px" }}>
-                          {selectedNotificationTicketDetails.status}
+                        <span style={{
+                          marginLeft: "8px",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          fontSize: "12px",
+                          fontWeight: "500",
+                          background: selectedNotificationTicketDetails.status === "en_attente_analyse" ? "rgba(13, 173, 219, 0.1)" : selectedNotificationTicketDetails.status === "assigne_technicien" ? "rgba(255, 122, 27, 0.1)" : (selectedNotificationTicketDetails.status === "en_traitement" || selectedNotificationTicketDetails.status === "en_cours") ? "rgba(15, 31, 61, 0.1)" : selectedNotificationTicketDetails.status === "resolu" ? "rgba(47, 158, 68, 0.1)" : selectedNotificationTicketDetails.status === "rejete" ? "#fee2e2" : selectedNotificationTicketDetails.status === "cloture" ? "#e5e7eb" : "#e5e7eb",
+                          color: selectedNotificationTicketDetails.status === "en_attente_analyse" ? "#0DADDB" : selectedNotificationTicketDetails.status === "assigne_technicien" ? "#FF7A1B" : (selectedNotificationTicketDetails.status === "en_traitement" || selectedNotificationTicketDetails.status === "en_cours") ? "#0F1F3D" : selectedNotificationTicketDetails.status === "resolu" ? "#2F9E44" : selectedNotificationTicketDetails.status === "rejete" ? "#991b1b" : selectedNotificationTicketDetails.status === "cloture" ? "#374151" : "#374151"
+                        }}>
+                          {getStatusLabel(selectedNotificationTicketDetails.status)}
                         </span>
                       </div>
-                      {selectedNotificationTicketDetails.category && (
-                        <div>
-                          <strong>Catégorie :</strong>
-                          <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
-                            {selectedNotificationTicketDetails.category}
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
@@ -11224,17 +11230,35 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                           background: selectedNotificationTicketDetails.priority === "critique" ? "rgba(229, 62, 62, 0.1)" : selectedNotificationTicketDetails.priority === "haute" ? "rgba(245, 158, 11, 0.1)" : selectedNotificationTicketDetails.priority === "moyenne" ? "rgba(13, 173, 219, 0.1)" : "#9e9e9e",
                           color: selectedNotificationTicketDetails.priority === "critique" ? "#E53E3E" : selectedNotificationTicketDetails.priority === "haute" ? "#F59E0B" : selectedNotificationTicketDetails.priority === "moyenne" ? "#0DADDB" : "white"
                         }}>
-                          {selectedNotificationTicketDetails.priority}
+                          {getPriorityLabel(selectedNotificationTicketDetails.priority)}
                         </span>
                       </div>
-                      {selectedNotificationTicketDetails.category && (
-                        <div>
-                          <strong>Catégorie :</strong>
-                          <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
-                            {selectedNotificationTicketDetails.category || "Non spécifiée"}
-                          </span>
-                        </div>
-                      )}
+                      <div>
+                        <strong>Type :</strong>
+                        <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
+                          {getTypeLabel(selectedNotificationTicketDetails.type)}
+                        </span>
+                      </div>
+                      <div>
+                        <strong>Catégorie :</strong>
+                        <span style={{ marginLeft: "8px", padding: "4px 8px", borderRadius: "4px" }}>
+                          {selectedNotificationTicketDetails.category || "Non spécifiée"}
+                        </span>
+                      </div>
+                      <div>
+                        <strong>Statut :</strong>
+                        <span style={{
+                          marginLeft: "8px",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          fontSize: "12px",
+                          fontWeight: "500",
+                          background: selectedNotificationTicketDetails.status === "en_attente_analyse" ? "rgba(13, 173, 219, 0.1)" : selectedNotificationTicketDetails.status === "assigne_technicien" ? "rgba(255, 122, 27, 0.1)" : (selectedNotificationTicketDetails.status === "en_traitement" || selectedNotificationTicketDetails.status === "en_cours") ? "rgba(15, 31, 61, 0.1)" : selectedNotificationTicketDetails.status === "resolu" ? "rgba(47, 158, 68, 0.1)" : selectedNotificationTicketDetails.status === "rejete" ? "#fee2e2" : selectedNotificationTicketDetails.status === "cloture" ? "#e5e7eb" : "#e5e7eb",
+                          color: selectedNotificationTicketDetails.status === "en_attente_analyse" ? "#0DADDB" : selectedNotificationTicketDetails.status === "assigne_technicien" ? "#FF7A1B" : (selectedNotificationTicketDetails.status === "en_traitement" || selectedNotificationTicketDetails.status === "en_cours") ? "#0F1F3D" : selectedNotificationTicketDetails.status === "resolu" ? "#2F9E44" : selectedNotificationTicketDetails.status === "rejete" ? "#991b1b" : selectedNotificationTicketDetails.status === "cloture" ? "#374151" : "#374151"
+                        }}>
+                          {getStatusLabel(selectedNotificationTicketDetails.status)}
+                        </span>
+                      </div>
                       {selectedNotificationTicketDetails.creator && (
                         <div>
                           <strong>Créateur :</strong>
