@@ -890,6 +890,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           const ticketsData = await ticketsRes.json();
           setAllTickets(ticketsData);
         }
+        if (ticketDetails?.id === ticketId) await loadTicketDetails(ticketId);
         alert("Ticket pris en charge");
       } else {
         const error = await res.json();
@@ -927,6 +928,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
       if (res.ok) {
         setCommentText("");
         setSelectedTicket(null);
+        if (ticketDetails?.id === ticketId) await loadTicketDetails(ticketId);
         alert("Commentaire ajouté avec succès");
       } else {
         const error = await res.json();
@@ -964,6 +966,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
       if (res.ok) {
         setRequestInfoText("");
         setRequestInfoTicket(null);
+        if (ticketDetails?.id === ticketId) await loadTicketDetails(ticketId);
         alert("Demande d'information envoyée à l'utilisateur");
       } else {
         const error = await res.json();
@@ -1014,6 +1017,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         }
         setResolveTicket(null);
         setResolutionSummary("");
+        if (ticketDetails?.id === ticketId) await loadTicketDetails(ticketId);
         alert("Ticket marqué comme résolu. L'utilisateur a été notifié.");
       } else {
         const error = await res.json();
