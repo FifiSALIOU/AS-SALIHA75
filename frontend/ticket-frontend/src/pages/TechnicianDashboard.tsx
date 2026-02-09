@@ -1399,8 +1399,8 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500", color: currentActiveSection === "tickets-rejetes" ? "white" : "inherit" }}>Tickets Rejetés</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
+            <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500", color: currentActiveSection === "tickets-rejetes" ? "white" : "inherit", whiteSpace: "nowrap" }}>Tickets Relancés</div>
             {rejectedCount > 0 && (
               <span
                 style={{
@@ -1415,6 +1415,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
                   fontSize: "11px",
                   fontWeight: 600,
                   color: "white",
+                  flexShrink: 0,
                 }}
               >
                 {rejectedCount > 99 ? "99+" : rejectedCount}
