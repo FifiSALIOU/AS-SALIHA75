@@ -131,8 +131,8 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
       // Délégation (autres cas)
       Icon = Users;
     } else if (
-      // Détecter rejet de résolution (resolu → rejete avec Validation utilisateur: Rejeté)
-      (oldStatus.includes("resolu") || oldStatus.includes("résolu")) &&
+      // Détecter rejet de résolution (resolu ou retraite → rejete avec Validation utilisateur: Rejeté)
+      (oldStatus.includes("resolu") || oldStatus.includes("résolu") || oldStatus.includes("retraite") || oldStatus.includes("retraité")) &&
       (status.includes("rejete") || status.includes("rejeté")) &&
       reason.includes("validation utilisateur: rejeté")
     ) {
@@ -281,7 +281,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
       const reason = (entry.reason || "").toLowerCase();
       
       // Détecter rejet de résolution : resolu → rejete avec "Validation utilisateur: Rejeté"
-      if ((oldStatus.includes("resolu") || oldStatus.includes("résolu")) && 
+      if ((oldStatus.includes("resolu") || oldStatus.includes("résolu") || oldStatus.includes("retraite") || oldStatus.includes("retraité")) && 
           (newStatus.includes("rejete") || newStatus.includes("rejeté")) &&
           reason.includes("validation utilisateur: rejeté")) {
         return "Ticket relancé";

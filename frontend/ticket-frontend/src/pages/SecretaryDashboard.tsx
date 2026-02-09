@@ -635,9 +635,9 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
       // Délégation (autres cas)
       Icon = Users;
     } else if (
-      // Détecter rejet de résolution (resolu → rejete avec Validation utilisateur: Rejeté)
+      // Détecter rejet de résolution (resolu ou retraite → rejete avec Validation utilisateur: Rejeté)
       entry.old_status &&
-      (oldStatus.includes("resolu") || oldStatus.includes("résolu")) &&
+      (oldStatus.includes("resolu") || oldStatus.includes("résolu") || oldStatus.includes("retraite") || oldStatus.includes("retraité")) &&
       (status.includes("rejete") || status.includes("rejeté")) &&
       reason.includes("validation utilisateur: rejeté")
     ) {
@@ -758,8 +758,8 @@ function SecretaryDashboard({ token }: SecretaryDashboardProps) {
       return "Ticket en cours de traitement";
     }
     
-    // Cas spécifique: rejet de résolution par l'utilisateur (resolu → rejete avec "Validation utilisateur: Rejeté")
-    if ((oldStatus.includes("resolu") || oldStatus.includes("résolu")) &&
+    // Cas spécifique: rejet de résolution par l'utilisateur (resolu ou retraite → rejete avec "Validation utilisateur: Rejeté")
+    if ((oldStatus.includes("resolu") || oldStatus.includes("résolu") || oldStatus.includes("retraite") || oldStatus.includes("retraité")) &&
         (newStatus.includes("rejete") || newStatus.includes("rejeté")) &&
         (reason.includes("validation utilisateur: rejeté") || reason.includes("validation utilisateur: rejeté"))) {
       return "Ticket relancé";
