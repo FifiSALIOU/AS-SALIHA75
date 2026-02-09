@@ -1314,6 +1314,10 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#f5f5f5", overflowX: "visible" }}>
+      <style>{`
+        .user-sidebar-menu::-webkit-scrollbar { display: none; }
+        .user-sidebar-menu { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
       {/* Sidebar */}
       <div style={{ 
         position: "fixed",
@@ -1328,7 +1332,7 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
         flexDirection: "column",
         gap: "0px",
         transition: "width 0.3s ease",
-        overflowY: "auto",
+        overflow: "hidden",
         overflowX: "visible",
         zIndex: 100,
         boxSizing: "border-box"
@@ -1340,7 +1344,8 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
           justifyContent: "space-between",
           marginBottom: "8px", 
           paddingBottom: "8px", 
-          borderBottom: "1px solid rgba(255,255,255,0.1)" 
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          flexShrink: 0
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
             {/* Logo HelpDesk */}
@@ -1426,7 +1431,8 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             gap: "12px",
             padding: "12px 0",
             marginBottom: "12px",
-            borderBottom: "1px solid rgba(255,255,255,0.1)"
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            flexShrink: 0
           }}>
             <div style={{
               width: "40px",
@@ -1475,6 +1481,8 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
           </div>
         )}
 
+        {/* Zone défilable : uniquement les sections du menu */}
+        <div className="user-sidebar-menu" style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "visible" }}>
         <div 
           onClick={() => {
             setShowTicketDetailsPage(false);
@@ -1606,8 +1614,10 @@ function UserDashboard({ token: tokenProp }: UserDashboardProps) {
             color: "white"
           }}>FAQ & Aide</div>
         </div>
+        </div>
+
         {/* Section Déconnexion + utilisateur en bas */}
-        <div style={{ marginTop: "auto" }}>
+        <div style={{ marginTop: "auto", flexShrink: 0 }}>
           {/* Trait de séparation (même style qu'au-dessus de Tableau de bord) */}
           <div style={{
             height: "1px",
