@@ -9062,32 +9062,32 @@ Les données détaillées seront disponibles dans une prochaine version.</pre>
                 style={{
                   background: "#ffffff",
                   borderRadius: "12px",
-                  padding: "16px 18px",
+                  padding: "16px",
                   boxShadow: "0 4px 12px rgba(15,23,42,0.06)",
                   border: "1px solid rgba(229,231,235,0.8)",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
+                  alignItems: "center",
+                  gap: "12px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9999px",
-                      background: "hsl(25, 80%, 92%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Clock size={18} color="#f97316" />
-                  </div>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "9999px",
+                    background: "hsl(25, 80%, 92%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Clock size={18} color="#f97316" />
                 </div>
-                <div style={{ fontSize: "24px", fontWeight: 700, color: "#111827" }}>0</div>
-                <div style={{ fontSize: "13px", color: "#6b7280", fontWeight: 500 }}>Garanties expirant</div>
-                <div style={{ fontSize: "11px", color: "#9ca3af" }}>dans 30 jours</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <div style={{ fontSize: "22px", fontWeight: 700, color: "#111827" }}>0</div>
+                  <div style={{ fontSize: "14px", color: "#6b7280", fontWeight: 500 }}>Garanties expirant</div>
+                  <div style={{ fontSize: "11px", color: "#9ca3af" }}>dans 30 jours</div>
+                </div>
               </div>
             </div>
           </div>
