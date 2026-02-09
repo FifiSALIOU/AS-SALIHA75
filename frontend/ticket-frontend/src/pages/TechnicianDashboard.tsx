@@ -1156,6 +1156,10 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#f5f5f5", overflowX: "visible" }}>
+      <style>{`
+        .tech-sidebar-menu::-webkit-scrollbar { display: none; }
+        .tech-sidebar-menu { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
       {/* Sidebar */}
       <div style={{ 
         position: "fixed",
@@ -1170,7 +1174,7 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
         flexDirection: "column",
         gap: "0px",
         transition: "width 0.3s ease",
-        overflowY: "auto",
+        overflow: "hidden",
         overflowX: "visible",
         zIndex: 100,
         boxSizing: "border-box"
@@ -1181,7 +1185,8 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           justifyContent: "space-between",
           marginBottom: "8px",
           paddingBottom: "8px",
-          borderBottom: "1px solid rgba(255,255,255,0.1)"
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          flexShrink: 0
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
             <div style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, backgroundColor: "white", borderRadius: "0.75rem", padding: "2px" }}>
@@ -1256,7 +1261,8 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
             gap: "12px",
             padding: "12px 0",
             marginBottom: "12px",
-            borderBottom: "1px solid rgba(255,255,255,0.1)"
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            flexShrink: 0
           }}>
             <div style={{
               width: "40px",
@@ -1305,6 +1311,8 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           </div>
         )}
         
+        {/* Zone défilable : uniquement les sections du menu */}
+        <div className="tech-sidebar-menu" style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "visible" }}>
         <div 
           onClick={() => navigate("/dashboard/techniciens")}
           style={{ 
@@ -1434,8 +1442,10 @@ function TechnicianDashboard({ token }: TechnicianDashboardProps) {
           <div style={{ fontSize: "16px", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: "500" }}>Actifs</div>
         </div>
 
+        </div>
+
         {/* Section Notifications + Déconnexion en bas */}
-        <div style={{ marginTop: "auto" }}>
+        <div style={{ marginTop: "auto", flexShrink: 0 }}>
           {/* Trait de séparation (même style qu'au-dessus de Tableau de bord) */}
           <div style={{
             height: "1px",
